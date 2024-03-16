@@ -370,7 +370,29 @@ mod tests {
             assert_eq!(notes.next(), Some(D));
             assert!(notes.next().is_none());
         }
+
+        #[test]
+        fn as_ref() {
+            let notes = Notes::with_stepper(&C, [H, H].into_iter());
+            let notes = notes.as_ref();
+            assert_eq!(notes[0], C);
+            assert_eq!(notes[1], C_SHARP);
+            assert_eq!(notes[2], D);
+        }
+
+        #[test]
+        fn from_iter() {
+            let notes = [C, C_SHARP, D];
+            let notes = Notes::from(notes.into_iter());
+
+            let mut iter = notes.into_iter();
+            assert_eq!(iter.next(), Some(C));
+            assert_eq!(iter.next(), Some(C_SHARP));
+            assert_eq!(iter.next(), Some(D));
+            assert!(iter.next().is_none());
+        }
     }
+
     mod stepper {
         use super::*;
         use crate::H;
