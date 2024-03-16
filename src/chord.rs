@@ -1,79 +1,77 @@
 use std::fmt::Display;
 
-use crate::{Note, Notes, NotesIterator, Tone};
+use crate::{Note, Notes, Tone};
 
-pub struct Chord<const N: usize>(Notes<N>);
+pub struct Chord(Notes);
 
-impl<const N: usize> Chord<N> {
-    pub fn new(root: &Note, steps: [Tone; N]) -> Self {
+impl Chord {
+    pub fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
         let notes = Notes::new(root, steps);
         Self(notes)
     }
 
     pub fn len(&self) -> usize {
-        N + 1
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     pub fn root(&self) -> &Note {
-        &self.0.root()
+        self.0.root()
     }
 
-    pub fn index(&self, idx: usize) -> Option<&Note> {
-        match idx {
-            0 => Some(&self.root()),
-            n if n <= N => self.index(idx),
-            _ => None,
-        }
+    pub fn index(&self, idx: usize) -> &Note {
+        self.0.index(idx)
     }
-}
 
-impl Chord<2> {
     pub fn major(root: &Note) -> Self {
         let steps = [Tone(4), Tone(3)];
-        Self::new(root, steps)
+        Self::new(root, steps.into_iter())
     }
 
     pub fn minor(root: &Note) -> Self {
         let steps = [Tone(3), Tone(4)];
-        Self::new(root, steps)
+        Self::new(root, steps.into_iter())
     }
 
     pub fn diminished(root: &Note) -> Self {
         let steps = [Tone(3), Tone(3)];
-        Self::new(root, steps)
+        Self::new(root, steps.into_iter())
     }
 }
 
-impl<const N: usize> IntoIterator for Chord<N> {
+impl IntoIterator for Chord {
     type Item = Note;
 
-    type IntoIter = NotesIterator<N>;
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        NotesIterator::new(self.0)
+        self.0.into_iter()
     }
 }
 
 pub enum Chords {
-    Major3(Chord<2>),
-    Minor3(Chord<2>),
-    Diminished3(Chord<2>),
+    Major3(Chord),
+    Minor3(Chord),
+    Diminished3(Chord),
 }
 
 impl Chords {
     pub fn major(root: &Note) -> Self {
-        let c = Chord::major(root);
-        Self::Major3(c)
+        let chord = Chord::major(root);
+        Self::Major3(chord)
     }
 
     pub fn minor(root: &Note) -> Self {
-        let c = Chord::minor(root);
-        Self::Minor3(c)
+        let chord = Chord::minor(root);
+        Self::Minor3(chord)
     }
 
     pub fn diminished(root: &Note) -> Self {
-        let c = Chord::diminished(root);
-        Self::Diminished3(c)
+        let chord = Chord::diminished(root);
+        Self::Diminished3(chord)
     }
 }
 
@@ -83,6 +81,20 @@ impl Display for Chords {
             Chords::Major3(c) => write!(f, "{}", c.root()),
             Chords::Minor3(c) => write!(f, "{}min", c.root()),
             Chords::Diminished3(c) => write!(f, "{}dim", c.root()),
+        }
+    }
+}
+
+impl IntoIterator for Chords {
+    type Item = Note;
+
+    type IntoIter = <Chord as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            Chords::Major3(chord) => chord.into_iter(),
+            Chords::Minor3(chord) => chord.into_iter(),
+            Chords::Diminished3(chord) => chord.into_iter(),
         }
     }
 }

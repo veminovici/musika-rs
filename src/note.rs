@@ -139,67 +139,50 @@ impl Add<Tone> for Note {
     }
 }
 
-pub struct Notes<const N: usize> {
-    root: Note,
-    notes: [Note; N],
-}
+pub struct Notes(Vec<Note>);
 
-impl<const N: usize> Notes<N> {
-    pub fn new(root: &Note, steps: [Tone; N]) -> Self {
-        let notes = NoteStepperIterator::new(root, steps.into_iter())
-            .skip(1)
-            .collect::<Vec<_>>()
-            .try_into()
-            .unwrap();
+impl Notes {
+    pub fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
+        let notes = NoteStepperIterator::new(root, steps).collect::<Vec<_>>();
+        debug_assert!(notes.len() > 0);
 
-        Self { root: *root, notes }
+        Self(notes)
     }
 
     pub fn len(&self) -> usize {
-        N + 1
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     pub fn root(&self) -> &Note {
-        &self.root
+        &self.0[0]
     }
 
-    pub fn index(&self, idx: usize) -> Option<&Note> {
-        match idx {
-            0 => Some(&self.root),
-            n if n <= N => Some(&self.notes[idx - 1]),
-            _ => None,
-        }
+    pub fn index(&self, idx: usize) -> &Note {
+        &self.0[idx]
+    }
+
+    pub fn as_slice(&self) -> &[Note] {
+        self.0.as_slice()
     }
 }
 
-impl<const N: usize> IntoIterator for Notes<N> {
+impl AsRef<[Note]> for Notes {
+    fn as_ref(&self) -> &[Note] {
+        &self.0
+    }
+}
+
+impl IntoIterator for Notes {
     type Item = Note;
 
-    type IntoIter = NotesIterator<N>;
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        NotesIterator::new(self)
-    }
-}
-
-pub struct NotesIterator<const N: usize> {
-    notes: Notes<N>,
-    idx: usize,
-}
-
-impl<const N: usize> NotesIterator<N> {
-    pub(crate) fn new(notes: Notes<N>) -> Self {
-        Self { notes, idx: 0 }
-    }
-}
-
-impl<const N: usize> Iterator for NotesIterator<N> {
-    type Item = Note;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let note = self.notes.index(self.idx).map(|n| *n);
-        self.idx += 1;
-        note
+        self.0.into_iter()
     }
 }
 

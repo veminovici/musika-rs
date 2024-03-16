@@ -1,44 +1,42 @@
-use crate::{Note, Notes, NotesIterator, Tone, H, W};
+use crate::{Note, Notes, Tone, H, W};
 
-pub struct Scale<const N: usize>(Notes<N>);
+pub struct Scale(Notes);
 
-impl<const N: usize> Scale<N> {
-    pub fn new(tonic: &Note, steps: [Tone; N]) -> Self {
+impl Scale {
+    pub fn new(tonic: &Note, steps: impl Iterator<Item = Tone>) -> Self {
         let notes = Notes::new(tonic, steps);
         Self(notes)
     }
 
     pub fn len(&self) -> usize {
-        N + 1
+        self.0.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     pub fn tonic(&self) -> &Note {
-        &self.0.root()
+        self.0.root()
     }
 
-    pub fn index(&self, idx: usize) -> Option<&Note> {
-        match idx {
-            0 => Some(&self.tonic()),
-            n if n <= N => self.index(idx),
-            _ => None,
-        }
+    pub fn index(&self, idx: usize) -> &Note {
+        self.0.index(idx)
     }
-}
 
-impl Scale<7> {
     pub fn major(tonic: &Note) -> Self {
         let steps = [W, W, H, W, W, W, H];
-        Self::new(tonic, steps)
+        Self::new(tonic, steps.into_iter())
     }
 }
 
-impl<const N: usize> IntoIterator for Scale<N> {
+impl IntoIterator for Scale {
     type Item = Note;
 
-    type IntoIter = NotesIterator<N>;
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        NotesIterator::new(self.0)
+        self.0.into_iter()
     }
 }
 
@@ -49,7 +47,7 @@ mod tests {
 
     #[test]
     fn new_scale() {
-        let scale = Scale::new(&C, [W, W, H, W, W, W, H]);
+        let scale = Scale::new(&C, [W, W, H, W, W, W, H].into_iter());
         assert_eq!(scale.tonic(), &C);
         assert_eq!(scale.len(), 8);
 
