@@ -78,6 +78,72 @@ impl From<&Note> for Major {
     }
 }
 
+pub struct Minor(Notes);
+
+impl Minor {
+    pub fn new(tonic: &Note) -> Self {
+        let steps = [W, H, W, W, H, W, H];
+        let notes = Notes::with_stepper(tonic, steps.into_iter());
+        Self(notes)
+    }
+}
+
+impl IntoIterator for Minor {
+    type Item = Note;
+
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl Scale for Minor {
+    fn tonic(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Minor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}min", self.tonic())
+    }
+}
+
+impl Debug for Minor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}min {}", self.tonic(), self.0)
+    }
+}
+
+impl Index<usize> for Minor {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.0.index(index)
+    }
+}
+
+impl AsRef<Notes> for Minor {
+    fn as_ref(&self) -> &Notes {
+        &self.0
+    }
+}
+
+impl From<&Note> for Minor {
+    fn from(root: &Note) -> Self {
+        Minor::new(root)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -106,5 +172,15 @@ mod tests {
         assert_eq!(note.note(), 0);
 
         assert!(iter.next().is_none());
+    }
+
+    #[test]
+    fn minor() {
+        let scale = Minor::new(&C);
+
+        assert_eq!(scale.tonic(), &C);
+        assert_eq!(scale.len(), 8);
+
+        assert_eq!(scale.to_string(), "Cmin");
     }
 }
