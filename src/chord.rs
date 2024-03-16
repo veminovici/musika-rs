@@ -55,7 +55,7 @@ impl Display for Major {
 
 impl Debug for Major {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?}", self.root(), self.0)
+        write!(f, "{} {}", self.root(), self.0)
     }
 }
 
@@ -122,7 +122,7 @@ impl Display for Minor {
 
 impl Debug for Minor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?}", self.root(), self.0)
+        write!(f, "{}min {}", self.root(), self.0)
     }
 }
 
@@ -189,7 +189,7 @@ impl Display for Diminished {
 
 impl Debug for Diminished {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?}", self.root(), self.0)
+        write!(f, "{}dim {}", self.root(), self.0)
     }
 }
 
@@ -225,6 +225,7 @@ mod tests {
         assert_eq!(chord.len(), 3);
 
         assert_eq!(chord.to_string(), "C");
+        assert_eq!(format!("{chord:?}"), "C [C, E, G]");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(C));
@@ -240,6 +241,7 @@ mod tests {
         assert_eq!(chord.len(), 3);
 
         assert_eq!(chord.to_string(), "Amin");
+        assert_eq!(format!("{chord:?}"), "Amin [A, C, E]");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(A));
@@ -255,6 +257,7 @@ mod tests {
         assert_eq!(chord.len(), 3);
 
         assert_eq!(chord.to_string(), "Bdim");
+        assert_eq!(format!("{chord:?}"), "Bdim [B, D, F]");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(B));

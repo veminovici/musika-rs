@@ -172,6 +172,14 @@ impl Debug for Notes {
     }
 }
 
+impl Display for Notes {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s: Vec<String> = self.0.iter().map(|n| n.to_string()).collect();
+        let s = s.join(", ");
+        write!(f, "[{s}]")
+    }
+}
+
 impl AsRef<[Note]> for Notes {
     fn as_ref(&self) -> &[Note] {
         &self.0
@@ -328,6 +336,41 @@ mod tests {
         }
     }
 
+    mod notes {
+        use super::*;
+        use crate::H;
+
+        #[test]
+        fn with_stepper() {
+            let notes = Notes::with_stepper(&C, [H, H].into_iter());
+            assert_eq!(notes.len(), 3);
+            assert_eq!(notes.root(), &C);
+        }
+
+        #[test]
+        fn display() {
+            let notes = Notes::with_stepper(&C, [H, H].into_iter());
+            assert_eq!(notes.to_string(), "[C, C#, D]");
+        }
+
+        #[test]
+        fn index() {
+            let notes = Notes::with_stepper(&C, [H, H].into_iter());
+            assert_eq!(notes[0], C);
+            assert_eq!(notes[1], C_SHARP);
+            assert_eq!(notes[2], D);
+        }
+
+        #[test]
+        fn into_iter() {
+            let mut notes = Notes::with_stepper(&C, [H, H].into_iter()).into_iter();
+
+            assert_eq!(notes.next(), Some(C));
+            assert_eq!(notes.next(), Some(C_SHARP));
+            assert_eq!(notes.next(), Some(D));
+            assert!(notes.next().is_none());
+        }
+    }
     mod stepper {
         use super::*;
         use crate::H;
