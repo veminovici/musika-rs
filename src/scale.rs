@@ -1,10 +1,10 @@
-use crate::{Note, Notes, NotesIterator, Tone};
+use crate::{Note, Notes, NotesIterator, Tone, H, W};
 
 pub struct Scale<const N: usize>(Notes<N>);
 
 impl<const N: usize> Scale<N> {
-    pub fn new(root: &Note, steps: [Tone; N]) -> Self {
-        let notes = Notes::new(root, steps);
+    pub fn new(tonic: &Note, steps: [Tone; N]) -> Self {
+        let notes = Notes::new(tonic, steps);
         Self(notes)
     }
 
@@ -22,6 +22,13 @@ impl<const N: usize> Scale<N> {
             n if n <= N => self.index(idx),
             _ => None,
         }
+    }
+}
+
+impl Scale<7> {
+    pub fn major(tonic: &Note) -> Self {
+        let steps = [W, W, H, W, W, W, H];
+        Self::new(tonic, steps)
     }
 }
 
@@ -43,6 +50,28 @@ mod tests {
     #[test]
     fn new_scale() {
         let scale = Scale::new(&C, [W, W, H, W, W, W, H]);
+        assert_eq!(scale.tonic(), &C);
+        assert_eq!(scale.len(), 8);
+
+        let mut iter = scale.into_iter();
+        assert_eq!(iter.next(), Some(C));
+        assert_eq!(iter.next(), Some(D));
+        assert_eq!(iter.next(), Some(E));
+        assert_eq!(iter.next(), Some(F));
+        assert_eq!(iter.next(), Some(G));
+        assert_eq!(iter.next(), Some(A));
+        assert_eq!(iter.next(), Some(B));
+
+        let note = iter.next().unwrap();
+        assert_eq!(note.octave(), &C5);
+        assert_eq!(note.note(), 0);
+
+        assert!(iter.next().is_none());
+    }
+
+    #[test]
+    fn major() {
+        let scale = Scale::major(&C);
         assert_eq!(scale.tonic(), &C);
         assert_eq!(scale.len(), 8);
 

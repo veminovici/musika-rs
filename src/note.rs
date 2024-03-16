@@ -4,7 +4,7 @@ use std::{
     ops::Add,
 };
 
-const OCTAVE_NOTE_COUNT: u8 = 12;
+pub(crate) const OCTAVE_NOTE_COUNT: u8 = 12;
 
 pub const C: Note = Note {
     octave: OCTAVE_DEFAULT,

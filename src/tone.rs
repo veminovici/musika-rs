@@ -1,7 +1,9 @@
 use std::fmt::Display;
 
+use crate::OCTAVE_NOTE_COUNT;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Tone(u8);
+pub struct Tone(pub(crate) u8);
 
 impl Display for Tone {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -27,6 +29,7 @@ impl From<u8> for Tone {
 
 pub const H: Tone = Tone(1);
 pub const W: Tone = Tone(2);
+pub const O: Tone = Tone(OCTAVE_NOTE_COUNT);
 
 #[cfg(test)]
 mod tests {
