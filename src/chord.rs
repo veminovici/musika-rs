@@ -4,20 +4,15 @@ use std::{
     ops::Index,
 };
 
-//
-// XCHORD
-//
-
+/// The chord behavior. The chord always has to be
+/// convertable to a sequence of [`Note`] notes.
 pub trait Chord: IntoIterator<Item = Note> {
     fn root(&self) -> &Note;
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool;
 }
 
-//
-// MAJOR CHORD
-//
-
+/// The major chord based on a given root note.
 pub struct Major(Notes);
 
 impl Major {
@@ -84,10 +79,7 @@ impl From<&Note> for Major {
     }
 }
 
-//
-// MINOR CHORD
-//
-
+/// Minor chord based on the root note.
 pub struct Minor(Notes);
 
 impl Minor {
@@ -154,10 +146,7 @@ impl From<&Note> for Minor {
     }
 }
 
-//
-// DIMISHED
-//
-
+/// Diminished chord based on a root note.
 pub struct Diminished(Notes);
 
 impl Diminished {

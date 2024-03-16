@@ -1,62 +1,80 @@
-use std::{fmt::Debug, ops::Index};
-
 use crate::{Note, Notes, H, W};
+use std::{
+    fmt::{Debug, Display},
+    ops::Index,
+};
 
-pub enum Scale {
-    Major(Notes),
+/// The behavior of a scale.
+pub trait Scale: IntoIterator<Item = Note> {
+    fn tonic(&self) -> &Note;
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool;
 }
 
-impl AsRef<Notes> for Scale {
-    fn as_ref(&self) -> &Notes {
-        match self {
-            Scale::Major(notes) => notes,
-        }
-    }
-}
+/// The major scale based on a tonic note.
+pub struct Major(Notes);
 
-impl Scale {
-    pub fn major(tonic: &Note) -> Self {
+impl Major {
+    pub fn new(tonic: &Note) -> Self {
         let steps = [W, W, H, W, W, W, H];
         let notes = Notes::with_stepper(tonic, steps.into_iter());
-        Self::Major(notes)
-    }
-
-    pub fn len(&self) -> usize {
-        self.as_ref().len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.as_ref().is_empty()
-    }
-
-    pub fn tonic(&self) -> &Note {
-        self.as_ref().root()
+        Self(notes)
     }
 }
 
-impl Debug for Scale {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?}", self.as_ref())
-    }
-}
-
-impl IntoIterator for Scale {
+impl IntoIterator for Major {
     type Item = Note;
 
     type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        match self {
-            Scale::Major(notes) => notes.into_iter(),
-        }
+        self.0.into_iter()
     }
 }
 
-impl Index<usize> for Scale {
+impl Scale for Major {
+    fn tonic(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.tonic())
+    }
+}
+
+impl Debug for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?}", self.tonic(), self.0)
+    }
+}
+
+impl Index<usize> for Major {
     type Output = Note;
 
     fn index(&self, index: usize) -> &Self::Output {
-        self.as_ref().index(index)
+        self.0.index(index)
+    }
+}
+
+impl AsRef<Notes> for Major {
+    fn as_ref(&self) -> &Notes {
+        &self.0
+    }
+}
+
+impl From<&Note> for Major {
+    fn from(root: &Note) -> Self {
+        Major::new(root)
     }
 }
 
@@ -67,9 +85,11 @@ mod tests {
 
     #[test]
     fn major() {
-        let scale = Scale::major(&C);
+        let scale = Major::new(&C);
         assert_eq!(scale.tonic(), &C);
         assert_eq!(scale.len(), 8);
+
+        assert_eq!(scale.to_string(), "C");
 
         let mut iter = scale.into_iter();
         assert_eq!(iter.next(), Some(C));
