@@ -4,6 +4,64 @@ use std::{
     ops::Index,
 };
 
+//
+// XCHORD
+//
+
+pub trait XChord: IntoIterator<Item = Note> {
+    fn root(&self) -> &Note;
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool;
+}
+
+pub struct Major(Notes);
+
+impl IntoIterator for Major {
+    type Item = Note;
+
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl XChord for Major {
+    fn root(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.root())
+    }
+}
+
+impl Debug for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?}", self.root(), self.0)
+    }
+}
+
+impl Major {
+    fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
+        let notes = Notes::with_stepper(&root, steps);
+        Self(notes)
+    }
+}
+
+//
+// CHORD
+//
 pub struct Chord(Notes);
 
 impl Chord {
