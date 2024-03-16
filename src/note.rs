@@ -1,7 +1,7 @@
 use crate::{Octave, Tone, OCTAVE_DEFAULT};
 use std::{
-    fmt::{Display, Octal},
-    ops::Add,
+    fmt::{Debug, Display, Octal},
+    ops::{Add, Index},
 };
 
 pub(crate) const OCTAVE_NOTE_COUNT: u8 = 12;
@@ -161,12 +161,14 @@ impl Notes {
         &self.0[0]
     }
 
-    pub fn index(&self, idx: usize) -> &Note {
-        &self.0[idx]
-    }
-
     pub fn as_slice(&self) -> &[Note] {
         self.0.as_slice()
+    }
+}
+
+impl Debug for Notes {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{:?}]", self.0)
     }
 }
 
@@ -183,6 +185,14 @@ impl IntoIterator for Notes {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl Index<usize> for Notes {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
     }
 }
 

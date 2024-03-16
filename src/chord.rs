@@ -1,29 +1,22 @@
-use std::fmt::Display;
+use std::{
+    fmt::{Debug, Display},
+    ops::Index,
+};
 
 use crate::{Note, Notes, Tone};
 
 pub struct Chord(Notes);
 
+impl AsRef<Notes> for Chord {
+    fn as_ref(&self) -> &Notes {
+        &self.0
+    }
+}
+
 impl Chord {
-    pub fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
+    fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
         let notes = Notes::new(root, steps);
         Self(notes)
-    }
-
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    pub fn root(&self) -> &Note {
-        self.0.root()
-    }
-
-    pub fn index(&self, idx: usize) -> &Note {
-        self.0.index(idx)
     }
 
     pub fn major(root: &Note) -> Self {
@@ -40,6 +33,18 @@ impl Chord {
         let steps = [Tone(3), Tone(3)];
         Self::new(root, steps.into_iter())
     }
+
+    pub fn len(&self) -> usize {
+        self.as_ref().len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.as_ref().is_empty()
+    }
+
+    pub fn root(&self) -> &Note {
+        self.as_ref().root()
+    }
 }
 
 impl IntoIterator for Chord {
@@ -49,6 +54,20 @@ impl IntoIterator for Chord {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl Debug for Chord {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.0)
+    }
+}
+
+impl Index<usize> for Chord {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.0.index(index)
     }
 }
 
@@ -75,12 +94,32 @@ impl Chords {
     }
 }
 
+impl From<Chords> for Chord {
+    fn from(chord: Chords) -> Self {
+        match chord {
+            Chords::Major3(c) => c,
+            Chords::Minor3(c) => c,
+            Chords::Diminished3(c) => c,
+        }
+    }
+}
+
 impl Display for Chords {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Chords::Major3(c) => write!(f, "{}", c.root()),
             Chords::Minor3(c) => write!(f, "{}min", c.root()),
             Chords::Diminished3(c) => write!(f, "{}dim", c.root()),
+        }
+    }
+}
+
+impl Debug for Chords {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Major3(chord) => write!(f, "{} {:?}", chord.root(), chord),
+            Self::Minor3(chord) => write!(f, "{}min {:?}", chord.root(), chord),
+            Self::Diminished3(chord) => write!(f, "{}dim {:?}", chord.root(), chord),
         }
     }
 }
@@ -95,6 +134,18 @@ impl IntoIterator for Chords {
             Chords::Major3(chord) => chord.into_iter(),
             Chords::Minor3(chord) => chord.into_iter(),
             Chords::Diminished3(chord) => chord.into_iter(),
+        }
+    }
+}
+
+impl Index<usize> for Chords {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        match self {
+            Chords::Major3(chord) => chord.index(index),
+            Chords::Minor3(chord) => chord.index(index),
+            Chords::Diminished3(chord) => chord.index(index),
         }
     }
 }
