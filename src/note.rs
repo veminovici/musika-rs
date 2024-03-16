@@ -142,9 +142,9 @@ impl Add<Tone> for Note {
 pub struct Notes(Vec<Note>);
 
 impl Notes {
-    pub fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
+    pub(crate) fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
         let notes = NoteStepperIterator::new(root, steps).collect::<Vec<_>>();
-        debug_assert!(notes.len() > 0);
+        debug_assert!(!notes.is_empty());
 
         Self(notes)
     }
@@ -196,6 +196,15 @@ impl Index<usize> for Notes {
     }
 }
 
+impl<N> From<N> for Notes
+where
+    N: Iterator<Item = Note>,
+{
+    fn from(notes: N) -> Self {
+        Self(notes.collect())
+    }
+}
+
 pub(crate) struct NoteStepperIterator<S> {
     cur_note: Note,
     started: bool,
@@ -233,98 +242,106 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::{C5, H, W};
-
     use super::*;
 
-    #[test]
-    fn display() {
-        assert_eq!(format!("{C}"), "C");
-        assert_eq!(format!("{C_SHARP}"), "C#");
-        assert_eq!(format!("{D}"), "D");
-        assert_eq!(format!("{D_SHARP}"), "D#");
-        assert_eq!(format!("{E}"), "E");
-        assert_eq!(format!("{F}"), "F");
-        assert_eq!(format!("{F_SHARP}"), "F#");
-        assert_eq!(format!("{G}"), "G");
-        assert_eq!(format!("{G_SHARP}"), "G#");
-        assert_eq!(format!("{A}"), "A");
-        assert_eq!(format!("{A_SHARP}"), "A#");
-        // assert_eq!(format!("{B}"), "B");
+    mod note {
+        use super::*;
+        use crate::{C5, H, W};
+
+        #[test]
+        fn display() {
+            assert_eq!(format!("{C}"), "C");
+            assert_eq!(format!("{C_SHARP}"), "C#");
+            assert_eq!(format!("{D}"), "D");
+            assert_eq!(format!("{D_SHARP}"), "D#");
+            assert_eq!(format!("{E}"), "E");
+            assert_eq!(format!("{F}"), "F");
+            assert_eq!(format!("{F_SHARP}"), "F#");
+            assert_eq!(format!("{G}"), "G");
+            assert_eq!(format!("{G_SHARP}"), "G#");
+            assert_eq!(format!("{A}"), "A");
+            assert_eq!(format!("{A_SHARP}"), "A#");
+            // assert_eq!(format!("{B}"), "B");
+        }
+
+        #[test]
+        fn octal() {
+            assert_eq!(format!("{C:o}"), "C4:C");
+            assert_eq!(format!("{C_SHARP:o}"), "C4:C#");
+            assert_eq!(format!("{D:o}"), "C4:D");
+            assert_eq!(format!("{D_SHARP:o}"), "C4:D#");
+            assert_eq!(format!("{E:o}"), "C4:E");
+            assert_eq!(format!("{F:o}"), "C4:F");
+            assert_eq!(format!("{F_SHARP:o}"), "C4:F#");
+            assert_eq!(format!("{G:o}"), "C4:G");
+            assert_eq!(format!("{G_SHARP:o}"), "C4:G#");
+            assert_eq!(format!("{A:o}"), "C4:A");
+            assert_eq!(format!("{A_SHARP:o}"), "C4:A#");
+            assert_eq!(format!("{B:o}"), "C4:B");
+        }
+
+        #[test]
+        fn u8_to_note() {
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 0), C);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 1), C_SHARP);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 2), D);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 3), D_SHARP);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 4), E);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 5), F);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 6), F_SHARP);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 7), G);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 8), G_SHARP);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 9), A);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 10), A_SHARP);
+            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 11), B);
+        }
+
+        #[test]
+        fn note_to_u8() {
+            assert_eq!(u8::from(C), 4 * OCTAVE_NOTE_COUNT + 0);
+            assert_eq!(u8::from(C_SHARP), 4 * OCTAVE_NOTE_COUNT + 1);
+            assert_eq!(u8::from(D), 4 * OCTAVE_NOTE_COUNT + 2);
+            assert_eq!(u8::from(D_SHARP), 4 * OCTAVE_NOTE_COUNT + 3);
+            assert_eq!(u8::from(E), 4 * OCTAVE_NOTE_COUNT + 4);
+            assert_eq!(u8::from(F), 4 * OCTAVE_NOTE_COUNT + 5);
+            assert_eq!(u8::from(F_SHARP), 4 * OCTAVE_NOTE_COUNT + 6);
+            assert_eq!(u8::from(G), 4 * OCTAVE_NOTE_COUNT + 7);
+            assert_eq!(u8::from(G_SHARP), 4 * OCTAVE_NOTE_COUNT + 8);
+            assert_eq!(u8::from(A), 4 * OCTAVE_NOTE_COUNT + 9);
+            assert_eq!(u8::from(A_SHARP), 4 * OCTAVE_NOTE_COUNT + 10);
+            assert_eq!(u8::from(B), 4 * OCTAVE_NOTE_COUNT + 11);
+        }
+
+        #[test]
+        fn add() {
+            assert_eq!(C + H, C_SHARP);
+            assert_eq!(C + W, D);
+            assert_eq!(C + Tone::from(3), D_SHARP);
+
+            let note = B + H;
+            assert_eq!(note.octave, C5);
+            assert_eq!(note.note, 0);
+
+            let note = B + W;
+            assert_eq!(note.octave, C5);
+            assert_eq!(note.note, 1);
+        }
     }
 
-    #[test]
-    fn octal() {
-        assert_eq!(format!("{C:o}"), "C4:C");
-        assert_eq!(format!("{C_SHARP:o}"), "C4:C#");
-        assert_eq!(format!("{D:o}"), "C4:D");
-        assert_eq!(format!("{D_SHARP:o}"), "C4:D#");
-        assert_eq!(format!("{E:o}"), "C4:E");
-        assert_eq!(format!("{F:o}"), "C4:F");
-        assert_eq!(format!("{F_SHARP:o}"), "C4:F#");
-        assert_eq!(format!("{G:o}"), "C4:G");
-        assert_eq!(format!("{G_SHARP:o}"), "C4:G#");
-        assert_eq!(format!("{A:o}"), "C4:A");
-        assert_eq!(format!("{A_SHARP:o}"), "C4:A#");
-        assert_eq!(format!("{B:o}"), "C4:B");
-    }
+    mod stepper {
+        use super::*;
+        use crate::H;
 
-    #[test]
-    fn u8_to_note() {
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 0), C);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 1), C_SHARP);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 2), D);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 3), D_SHARP);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 4), E);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 5), F);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 6), F_SHARP);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 7), G);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 8), G_SHARP);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 9), A);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 10), A_SHARP);
-        assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 11), B);
-    }
+        #[test]
+        fn stepper() {
+            let tonic = C;
+            let steps = [H, H];
+            let mut iter = NoteStepperIterator::new(&tonic, steps.into_iter());
 
-    #[test]
-    fn note_to_u8() {
-        assert_eq!(u8::from(C), 4 * OCTAVE_NOTE_COUNT + 0);
-        assert_eq!(u8::from(C_SHARP), 4 * OCTAVE_NOTE_COUNT + 1);
-        assert_eq!(u8::from(D), 4 * OCTAVE_NOTE_COUNT + 2);
-        assert_eq!(u8::from(D_SHARP), 4 * OCTAVE_NOTE_COUNT + 3);
-        assert_eq!(u8::from(E), 4 * OCTAVE_NOTE_COUNT + 4);
-        assert_eq!(u8::from(F), 4 * OCTAVE_NOTE_COUNT + 5);
-        assert_eq!(u8::from(F_SHARP), 4 * OCTAVE_NOTE_COUNT + 6);
-        assert_eq!(u8::from(G), 4 * OCTAVE_NOTE_COUNT + 7);
-        assert_eq!(u8::from(G_SHARP), 4 * OCTAVE_NOTE_COUNT + 8);
-        assert_eq!(u8::from(A), 4 * OCTAVE_NOTE_COUNT + 9);
-        assert_eq!(u8::from(A_SHARP), 4 * OCTAVE_NOTE_COUNT + 10);
-        assert_eq!(u8::from(B), 4 * OCTAVE_NOTE_COUNT + 11);
-    }
-
-    #[test]
-    fn add() {
-        assert_eq!(C + H, C_SHARP);
-        assert_eq!(C + W, D);
-        assert_eq!(C + Tone::from(3), D_SHARP);
-
-        let note = B + H;
-        assert_eq!(note.octave, C5);
-        assert_eq!(note.note, 0);
-
-        let note = B + W;
-        assert_eq!(note.octave, C5);
-        assert_eq!(note.note, 1);
-    }
-
-    #[test]
-    fn stepper() {
-        let tonic = C;
-        let steps = [H, H];
-        let mut iter = NoteStepperIterator::new(&tonic, steps.into_iter());
-
-        assert_eq!(iter.next(), Some(C));
-        assert_eq!(iter.next(), Some(C_SHARP));
-        assert_eq!(iter.next(), Some(D));
-        assert!(iter.next().is_none());
+            assert_eq!(iter.next(), Some(C));
+            assert_eq!(iter.next(), Some(C_SHARP));
+            assert_eq!(iter.next(), Some(D));
+            assert!(iter.next().is_none());
+        }
     }
 }

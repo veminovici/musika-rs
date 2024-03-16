@@ -17,7 +17,7 @@ impl AsRef<Notes> for Scale {
 impl Scale {
     pub fn major(tonic: &Note) -> Self {
         let steps = [W, W, H, W, W, W, H];
-        let notes = Notes::new(tonic, steps.into_iter());
+        let notes = Notes::with_stepper(tonic, steps.into_iter());
         Self::Major(notes)
     }
 
@@ -59,6 +59,7 @@ impl Index<usize> for Scale {
         self.as_ref().index(index)
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;

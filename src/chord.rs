@@ -1,49 +1,42 @@
+use crate::{Note, Notes, Tone};
 use std::{
     fmt::{Debug, Display},
     ops::Index,
 };
 
-use crate::{Note, Notes, Tone};
-
 pub struct Chord(Notes);
 
-impl AsRef<Notes> for Chord {
-    fn as_ref(&self) -> &Notes {
-        &self.0
-    }
-}
-
 impl Chord {
-    fn new(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
-        let notes = Notes::new(root, steps);
+    fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
+        let notes = Notes::with_stepper(root, steps);
         Self(notes)
     }
 
     pub fn major(root: &Note) -> Self {
         let steps = [Tone(4), Tone(3)];
-        Self::new(root, steps.into_iter())
+        Self::with_stepper(root, steps.into_iter())
     }
 
     pub fn minor(root: &Note) -> Self {
         let steps = [Tone(3), Tone(4)];
-        Self::new(root, steps.into_iter())
+        Self::with_stepper(root, steps.into_iter())
     }
 
     pub fn diminished(root: &Note) -> Self {
         let steps = [Tone(3), Tone(3)];
-        Self::new(root, steps.into_iter())
+        Self::with_stepper(root, steps.into_iter())
     }
 
     pub fn len(&self) -> usize {
-        self.as_ref().len()
+        self.0.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.as_ref().is_empty()
+        self.0.is_empty()
     }
 
     pub fn root(&self) -> &Note {
-        self.as_ref().root()
+        self.0.root()
     }
 }
 
@@ -54,6 +47,12 @@ impl IntoIterator for Chord {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+impl AsRef<Notes> for Chord {
+    fn as_ref(&self) -> &Notes {
+        &self.0
     }
 }
 
@@ -68,6 +67,21 @@ impl Index<usize> for Chord {
 
     fn index(&self, index: usize) -> &Self::Output {
         self.0.index(index)
+    }
+}
+
+impl<N> From<N> for Chord
+where
+    N: Iterator<Item = Note>,
+{
+    fn from(notes: N) -> Self {
+        Self(notes.into())
+    }
+}
+
+impl From<Notes> for Chord {
+    fn from(notes: Notes) -> Self {
+        Self(notes)
     }
 }
 
