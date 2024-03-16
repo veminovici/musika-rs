@@ -175,24 +175,25 @@ impl<const N: usize> Notes<N> {
 impl<const N: usize> IntoIterator for Notes<N> {
     type Item = Note;
 
-    type IntoIter = NoteCollectionIterator<N>;
+    type IntoIter = NotesIterator<N>;
 
     fn into_iter(self) -> Self::IntoIter {
-        NoteCollectionIterator::new(self)
+        NotesIterator::new(self)
     }
 }
-pub struct NoteCollectionIterator<const N: usize> {
+
+pub struct NotesIterator<const N: usize> {
     notes: Notes<N>,
     idx: usize,
 }
 
-impl<const N: usize> NoteCollectionIterator<N> {
+impl<const N: usize> NotesIterator<N> {
     pub(crate) fn new(notes: Notes<N>) -> Self {
         Self { notes, idx: 0 }
     }
 }
 
-impl<const N: usize> Iterator for NoteCollectionIterator<N> {
+impl<const N: usize> Iterator for NotesIterator<N> {
     type Item = Note;
 
     fn next(&mut self) -> Option<Self::Item> {

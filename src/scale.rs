@@ -1,4 +1,4 @@
-use crate::{Note, NoteCollectionIterator, Notes, Tone};
+use crate::{Note, Notes, NotesIterator, Tone};
 
 pub struct Scale<const N: usize>(Notes<N>);
 
@@ -28,10 +28,10 @@ impl<const N: usize> Scale<N> {
 impl<const N: usize> IntoIterator for Scale<N> {
     type Item = Note;
 
-    type IntoIter = NoteCollectionIterator<N>;
+    type IntoIter = NotesIterator<N>;
 
     fn into_iter(self) -> Self::IntoIter {
-        NoteCollectionIterator::new(self.0)
+        NotesIterator::new(self.0)
     }
 }
 
