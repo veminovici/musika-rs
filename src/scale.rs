@@ -54,7 +54,7 @@ impl Display for Major {
 
 impl Debug for Major {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?}", self.tonic(), self.0)
+        write!(f, "{} {}", self.tonic(), self.0)
     }
 }
 
@@ -90,6 +90,7 @@ mod tests {
         assert_eq!(scale.len(), 8);
 
         assert_eq!(scale.to_string(), "C");
+        assert_eq!(format!("{scale:?}"), "C [C, D, E, F, G, A, B, C]");
 
         let mut iter = scale.into_iter();
         assert_eq!(iter.next(), Some(C));
