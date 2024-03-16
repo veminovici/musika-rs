@@ -14,51 +14,6 @@ pub trait XChord: IntoIterator<Item = Note> {
     fn is_empty(&self) -> bool;
 }
 
-pub struct Major(Notes);
-
-impl IntoIterator for Major {
-    type Item = Note;
-
-    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl XChord for Major {
-    fn root(&self) -> &Note {
-        &self.0[0]
-    }
-
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-}
-
-impl Display for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.root())
-    }
-}
-
-impl Debug for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {:?}", self.root(), self.0)
-    }
-}
-
-impl Major {
-    fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
-        let notes = Notes::with_stepper(&root, steps);
-        Self(notes)
-    }
-}
-
 //
 // CHORD
 //
@@ -68,21 +23,6 @@ impl Chord {
     fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
         let notes = Notes::with_stepper(root, steps);
         Self(notes)
-    }
-
-    pub fn major(root: &Note) -> Self {
-        let steps = [Tone(4), Tone(3)];
-        Self::with_stepper(root, steps.into_iter())
-    }
-
-    pub fn minor(root: &Note) -> Self {
-        let steps = [Tone(3), Tone(4)];
-        Self::with_stepper(root, steps.into_iter())
-    }
-
-    pub fn diminished(root: &Note) -> Self {
-        let steps = [Tone(3), Tone(3)];
-        Self::with_stepper(root, steps.into_iter())
     }
 
     pub fn len(&self) -> usize {
@@ -143,82 +83,213 @@ impl From<Notes> for Chord {
     }
 }
 
-pub enum Chords {
-    Major3(Chord),
-    Minor3(Chord),
-    Diminished3(Chord),
-}
+//
+// MAJOR CHORD
+//
 
-impl Chords {
-    pub fn major(root: &Note) -> Self {
-        let chord = Chord::major(root);
-        Self::Major3(chord)
-    }
+pub struct Major(Chord);
 
-    pub fn minor(root: &Note) -> Self {
-        let chord = Chord::minor(root);
-        Self::Minor3(chord)
-    }
-
-    pub fn diminished(root: &Note) -> Self {
-        let chord = Chord::diminished(root);
-        Self::Diminished3(chord)
+impl Major {
+    pub fn new(root: &Note) -> Self {
+        let steps = [Tone(4), Tone(3)];
+        let chord = Chord::with_stepper(root, steps.into_iter());
+        Self(chord)
     }
 }
 
-impl From<Chords> for Chord {
-    fn from(chord: Chords) -> Self {
-        match chord {
-            Chords::Major3(c) => c,
-            Chords::Minor3(c) => c,
-            Chords::Diminished3(c) => c,
-        }
-    }
-}
-
-impl Display for Chords {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Chords::Major3(c) => write!(f, "{}", c.root()),
-            Chords::Minor3(c) => write!(f, "{}min", c.root()),
-            Chords::Diminished3(c) => write!(f, "{}dim", c.root()),
-        }
-    }
-}
-
-impl Debug for Chords {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Major3(chord) => write!(f, "{} {:?}", chord.root(), chord),
-            Self::Minor3(chord) => write!(f, "{}min {:?}", chord.root(), chord),
-            Self::Diminished3(chord) => write!(f, "{}dim {:?}", chord.root(), chord),
-        }
-    }
-}
-
-impl IntoIterator for Chords {
+impl IntoIterator for Major {
     type Item = Note;
 
-    type IntoIter = <Chord as IntoIterator>::IntoIter;
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
-        match self {
-            Chords::Major3(chord) => chord.into_iter(),
-            Chords::Minor3(chord) => chord.into_iter(),
-            Chords::Diminished3(chord) => chord.into_iter(),
-        }
+        self.0.into_iter()
     }
 }
 
-impl Index<usize> for Chords {
+impl XChord for Major {
+    fn root(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.root())
+    }
+}
+
+impl Debug for Major {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?}", self.root(), self.0)
+    }
+}
+
+impl Index<usize> for Major {
     type Output = Note;
 
     fn index(&self, index: usize) -> &Self::Output {
-        match self {
-            Chords::Major3(chord) => chord.index(index),
-            Chords::Minor3(chord) => chord.index(index),
-            Chords::Diminished3(chord) => chord.index(index),
-        }
+        self.0.index(index)
+    }
+}
+
+impl AsRef<Notes> for Major {
+    fn as_ref(&self) -> &Notes {
+        &self.0 .0
+    }
+}
+
+impl From<&Note> for Major {
+    fn from(root: &Note) -> Self {
+        Major::new(root)
+    }
+}
+
+//
+// MINOR CHORD
+//
+
+pub struct Minor(Chord);
+
+impl Minor {
+    pub fn new(root: &Note) -> Self {
+        let steps = [Tone(3), Tone(4)];
+        let chord = Chord::with_stepper(root, steps.into_iter());
+        Self(chord)
+    }
+}
+
+impl IntoIterator for Minor {
+    type Item = Note;
+
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl XChord for Minor {
+    fn root(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Minor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}min", self.root())
+    }
+}
+
+impl Debug for Minor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?}", self.root(), self.0)
+    }
+}
+
+impl Index<usize> for Minor {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.0.index(index)
+    }
+}
+
+impl AsRef<Notes> for Minor {
+    fn as_ref(&self) -> &Notes {
+        &self.0 .0
+    }
+}
+
+impl From<&Note> for Minor {
+    fn from(root: &Note) -> Self {
+        Minor::new(root)
+    }
+}
+
+//
+// DIMISHED
+//
+
+pub struct Diminished(Chord);
+
+impl Diminished {
+    pub fn new(root: &Note) -> Self {
+        let steps = [Tone(3), Tone(3)];
+        let chord = Chord::with_stepper(root, steps.into_iter());
+        Self(chord)
+    }
+}
+
+impl IntoIterator for Diminished {
+    type Item = Note;
+
+    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl XChord for Diminished {
+    fn root(&self) -> &Note {
+        &self.0[0]
+    }
+
+    fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+}
+
+impl Display for Diminished {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}dim", self.root())
+    }
+}
+
+impl Debug for Diminished {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {:?}", self.root(), self.0)
+    }
+}
+
+impl Index<usize> for Diminished {
+    type Output = Note;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.0.index(index)
+    }
+}
+
+impl AsRef<Notes> for Diminished {
+    fn as_ref(&self) -> &Notes {
+        &self.0 .0
+    }
+}
+
+impl From<&Note> for Diminished {
+    fn from(root: &Note) -> Self {
+        Diminished::new(root)
     }
 }
 
@@ -229,9 +300,11 @@ mod tests {
 
     #[test]
     fn major() {
-        let chord = Chord::major(&C);
+        let chord = Major::from(&C);
         assert_eq!(chord.root(), &C);
         assert_eq!(chord.len(), 3);
+
+        assert_eq!(chord.to_string(), "C");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(C));
@@ -242,9 +315,11 @@ mod tests {
 
     #[test]
     fn minor() {
-        let chord = Chord::minor(&A);
+        let chord = Minor::from(&A);
         assert_eq!(chord.root(), &A);
         assert_eq!(chord.len(), 3);
+
+        assert_eq!(chord.to_string(), "Amin");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(A));
@@ -255,26 +330,16 @@ mod tests {
 
     #[test]
     fn diminshed() {
-        let chord = Chord::diminished(&B);
+        let chord = Diminished::from(&B);
         assert_eq!(chord.root(), &B);
         assert_eq!(chord.len(), 3);
+
+        assert_eq!(chord.to_string(), "Bdim");
 
         let mut iter = chord.into_iter();
         assert_eq!(iter.next(), Some(B));
         assert_eq!(iter.next(), Some(D + O));
         assert_eq!(iter.next(), Some(F + O));
         assert!(iter.next().is_none());
-    }
-
-    #[test]
-    fn chords() {
-        let cmaj = Chords::major(&C);
-        assert_eq!(cmaj.to_string(), "C");
-
-        let amin = Chords::minor(&A);
-        assert_eq!(amin.to_string(), "Amin");
-
-        let bdim = Chords::diminished(&B);
-        assert_eq!(bdim.to_string(), "Bdim");
     }
 }
