@@ -11,19 +11,19 @@ use super::{Tone, OCTAVE};
 pub struct Note(i8);
 
 impl Note {
-    const M: i8 = 3;
-    const O: i8 = OCTAVE.inner() as i8;
+    const TRANSLATE: i8 = 3;
+    const OCTAVE_SIZE: i8 = OCTAVE.inner() as i8;
 
     /// Returns the base note (the one in the C4 octave)
     pub fn base(&self) -> Self {
-        let mut note = self.0 + Self::M;
+        let mut note = self.0 + Self::TRANSLATE;
         if note < 0 {
-            let p = note / Self::O;
-            note += (p.abs() + 1) * Self::O;
+            let p = note / Self::OCTAVE_SIZE;
+            note += (p.abs() + 1) * Self::OCTAVE_SIZE;
         }
 
-        note %= Self::O;
-        note -= Self::M;
+        note %= Self::OCTAVE_SIZE;
+        note -= Self::TRANSLATE;
 
         let b: Self = note.into();
         debug_assert_eq!(
@@ -38,12 +38,12 @@ impl Note {
 
     /// Returns the octave for the given note (eg. C4)
     pub fn octave(&self) -> i8 {
-        let octave = (self.0 + Self::M) / Self::O;
-        let rest = (self.0 + Self::M) % Self::O;
+        let octave = (self.0 + Self::TRANSLATE) / Self::OCTAVE_SIZE;
+        let rest = (self.0 + Self::TRANSLATE) % Self::OCTAVE_SIZE;
         if rest >= 0 {
-            octave + Self::M + 1
+            octave + Self::TRANSLATE + 1
         } else {
-            octave + Self::M
+            octave + Self::TRANSLATE
         }
     }
 
@@ -233,9 +233,9 @@ impl Sub<Tone> for Note {
     }
 }
 
-pub const A: Note = Note(-Note::M);
-pub const A_SHARP: Note = Note(-Note::M + 1);
-pub const B: Note = Note(-Note::M + 2);
+pub const A: Note = Note(-Note::TRANSLATE);
+pub const A_SHARP: Note = Note(-Note::TRANSLATE + 1);
+pub const B: Note = Note(-Note::TRANSLATE + 2);
 pub const C: Note = Note(0);
 pub const C_SHARP: Note = Note(1);
 pub const D: Note = Note(2);
