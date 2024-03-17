@@ -31,6 +31,20 @@ println!("Dom7 C: {chord:X}");
 
 You can find more examples in the [examples][examples_folder] folder.
 
+## Piano Exercises
+You can find all piano exercises implemented in the [practices][practices_file] file.
+
+### Exercise 1 (C - Am - F - G)
+```rust
+use musika_rs::*;
+
+println!("Exercise 1: (C - Am - F - G");
+println!("{:X}", chords::Major::from(C)); // C
+println!("{:X}", chords::Minor::from(A)); // Amin
+println!("{:X}", chords::Major::from(F)); // F
+println!("{:X}", chords::Major::from(G)); // G
+```
+
 ## Resources
 - [Piano Chords][piano_chords_url]
 
@@ -48,3 +62,4 @@ You can find more examples in the [examples][examples_folder] folder.
 [piano_chords_url]: https://www.pianochord.org/
 [estonia_url]: https://goo.gl/maps/DmB9ewY2R3sPGFnTA
 [examples_folder]: ./examples/
+[practices_file]: ./examples/practices.rs
