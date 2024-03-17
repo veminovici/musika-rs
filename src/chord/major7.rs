@@ -1,17 +1,13 @@
-use super::Chord;
-use crate::{
-    chord::{to_debug, to_lower_hex, to_upper_hex},
-    Note, NoteStepperIterator,
-};
+use super::{Chord, InnerChord};
+use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
-pub struct Major7(Vec<Note>);
+pub struct Major7(InnerChord);
 
 impl Major7 {
     pub fn new(root: Note) -> Self {
         let steps = [4, 3, 4];
-        let notes = NoteStepperIterator::new(root, steps.into_iter()).collect::<Vec<_>>();
-        Self(notes)
+        Self(InnerChord::with_steps(root, steps.into_iter()))
     }
 }
 
@@ -29,22 +25,19 @@ impl Display for Major7 {
 
 impl Debug for Major7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_debug(self.0.iter());
-        write!(f, "Chord: Maj7, {:?}, [{notes}]", self.root())
+        write!(f, "Chord: Maj7, {:?}, {:?}", self.root(), self.0)
     }
 }
 
 impl UpperHex for Major7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_upper_hex(self.0.iter());
-        write!(f, "{self} [{notes}]")
+        write!(f, "{:X}7 {:X}", self.root(), self.0)
     }
 }
 
 impl LowerHex for Major7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_lower_hex(self.0.iter());
-        write!(f, "{self} [{notes}]")
+        write!(f, "{:x}7 {:x}", self.root(), self.0)
     }
 }
 
@@ -60,7 +53,7 @@ impl IntoIterator for Major7 {
 
 impl Chord for Major7 {
     fn root(&self) -> &Note {
-        &self.0[0]
+        self.0.root()
     }
 
     fn len(&self) -> usize {

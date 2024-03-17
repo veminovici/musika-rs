@@ -1,17 +1,13 @@
-use super::Chord;
-use crate::{
-    chord::{to_debug, to_lower_hex, to_upper_hex},
-    Note, NoteStepperIterator,
-};
+use super::{Chord, InnerChord};
+use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
-pub struct Dominant7(Vec<Note>);
+pub struct Dominant7(InnerChord);
 
 impl Dominant7 {
     pub fn new(root: Note) -> Self {
         let steps = [4, 3, 3];
-        let notes = NoteStepperIterator::new(root, steps.into_iter()).collect::<Vec<_>>();
-        Self(notes)
+        Self(InnerChord::with_steps(root, steps.into_iter()))
     }
 }
 
@@ -23,28 +19,25 @@ impl From<Note> for Dominant7 {
 
 impl Display for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}7", self.root())
+        write!(f, "{}Dom7", self.root())
     }
 }
 
 impl Debug for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_debug(self.0.iter());
-        write!(f, "Chord: Dom7, {:?}, [{notes}]", self.root())
+        write!(f, "Chord: Dom7, {:?}, {:?}", self.root(), self.0)
     }
 }
 
 impl UpperHex for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_upper_hex(self.0.iter());
-        write!(f, "{self} [{notes}]")
+        write!(f, "{:X}Dom7 {:X}", self.root(), self.0)
     }
 }
 
 impl LowerHex for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = to_lower_hex(self.0.iter());
-        write!(f, "{self} [{notes}]")
+        write!(f, "{:x}Dom7 {:x}", self.root(), self.0)
     }
 }
 
@@ -60,7 +53,7 @@ impl IntoIterator for Dominant7 {
 
 impl Chord for Dominant7 {
     fn root(&self) -> &Note {
-        &self.0[0]
+        self.0.root()
     }
 
     fn len(&self) -> usize {
@@ -92,12 +85,12 @@ mod tests {
     #[test]
     fn show() {
         let chord = Dominant7::new(C);
-        assert_eq!(format!("{chord}"), "C7");
+        assert_eq!(format!("{chord}"), "CDom7");
         assert_eq!(
             format!("{chord:?}"),
             "Chord: Dom7, C4:C:0, [C4:C:0, C4:E:4, C4:G:7, C5:A#:10]"
         );
-        assert_eq!(format!("{chord:X}"), "C7 [C, E, G, A#]");
-        assert_eq!(format!("{chord:x}"), "C7 [C, E, G, Bb]");
+        assert_eq!(format!("{chord:X}"), "CDom7 [C, E, G, A#]");
+        assert_eq!(format!("{chord:x}"), "CDom7 [C, E, G, Bb]");
     }
 }
