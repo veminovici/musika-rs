@@ -7,6 +7,30 @@
 ![GitHub last commit][last-commit-badge]
 ![GitHub watchers][watchers-badge]
 
+## Description
+A Rust crate for musical basic elements.
+
+```rust
+use musika_rs::{
+    chords::{self},
+    C, C_SHARP,
+};
+
+let chord = chords::Major::from(C);
+println!("Major C: {chord:X}");
+
+let chord = chords::Major7::from(C);
+println!("Major7 C: {chord:X}");
+
+let chord = chords::Major7::from(C_SHARP);
+println!("Major7 C#: {chord:X}");
+
+let chord = chords::Dominant7::from(C);
+println!("Dom7 C: {chord:X}");
+```
+
+You can find more examples in the [examples][examples_folder] folder.
+
 ## Resources
 - [Piano Chords][piano_chords_url]
 
@@ -23,3 +47,4 @@
 [watchers-badge]: https://img.shields.io/github/watchers/veminovici/musika-rs
 [piano_chords_url]: https://www.pianochord.org/
 [estonia_url]: https://goo.gl/maps/DmB9ewY2R3sPGFnTA
+[examples_folder]: ./examples/
