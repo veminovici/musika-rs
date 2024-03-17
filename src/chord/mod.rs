@@ -14,7 +14,7 @@ pub use minor::*;
 pub use minor7::*;
 pub use minor7b5::*;
 
-use crate::{Note, NoteStepperIterator, Tone};
+use crate::{Note, NoteStepperIterator, Tone, OCTAVE};
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
 /// The chord behavior. The chord always has to be
@@ -28,6 +28,12 @@ pub trait Chord: IntoIterator<Item = Note> {
 
     /// Determines if the chord is empty.
     fn is_empty(&self) -> bool;
+
+    /// Moves the chord one octave up.
+    fn up_one_octave(self) -> Self;
+
+    /// Move the chord one octave down.
+    fn down_one_octave(self) -> Self;
 }
 
 pub(crate) struct InnerChord(Vec<Note>);
@@ -108,6 +114,17 @@ impl Chord for InnerChord {
 
     fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    /// Moves the chord one octave up.
+    fn up_one_octave(self) -> Self {
+        let notes = self.into_iter().map(|n| n + OCTAVE);
+        Self::new(notes)
+    }
+
+    fn down_one_octave(self) -> Self {
+        let notes = self.into_iter().map(|n| n - OCTAVE);
+        Self::new(notes)
     }
 }
 

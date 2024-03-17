@@ -65,6 +65,14 @@ impl Chord for Minor7b5 {
     fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
+
+    fn up_one_octave(self) -> Self {
+        Self(self.0.up_one_octave())
+    }
+
+    fn down_one_octave(self) -> Self {
+        Self(self.0.down_one_octave())
+    }
 }
 
 #[cfg(test)]
