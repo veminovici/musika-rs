@@ -21,9 +21,11 @@
 //! println!("Dom7 C: {chord:X}");
 //! ```
 
+mod bar;
 pub mod chords;
 mod note;
 mod tone;
 
+pub use bar::*;
 pub use note::*;
 pub use tone::*;
