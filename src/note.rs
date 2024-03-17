@@ -233,9 +233,9 @@ impl Sub<Tone> for Note {
     }
 }
 
-pub const A: Note = Note(-3);
-pub const A_SHARP: Note = Note(-2);
-pub const B: Note = Note(-1);
+pub const A: Note = Note(-Note::M);
+pub const A_SHARP: Note = Note(-Note::M + 1);
+pub const B: Note = Note(-Note::M + 2);
 pub const C: Note = Note(0);
 pub const C_SHARP: Note = Note(1);
 pub const D: Note = Note(2);
