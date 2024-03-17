@@ -1,79 +1,61 @@
-use crate::{Octave, Tone, OCTAVE_DEFAULT};
 use std::{
-    fmt::{Debug, Display, Octal},
-    ops::{Add, Index},
+    fmt::{Debug, Display, LowerHex, UpperHex},
+    ops::{Add, Sub},
 };
 
-pub(crate) const OCTAVE_NOTE_COUNT: u8 = 12;
+use super::{Tone, OCTAVE};
 
-pub const C: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 0,
-};
-pub const C_SHARP: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 1,
-};
-pub const D: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 2,
-};
-pub const D_SHARP: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 3,
-};
-pub const E: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 4,
-};
-pub const F: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 5,
-};
-pub const F_SHARP: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 6,
-};
-pub const G: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 7,
-};
-pub const G_SHARP: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 8,
-};
-pub const A: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 9,
-};
-pub const A_SHARP: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 10,
-};
-pub const B: Note = Note {
-    octave: OCTAVE_DEFAULT,
-    note: 11,
-};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub struct Note {
-    octave: Octave,
-    note: u8,
-}
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Note(i8);
 
 impl Note {
-    pub fn octave(&self) -> &Octave {
-        &self.octave
+    pub fn base(&self) -> Self {
+        const M: i8 = 3;
+
+        if (self.0 + M) >= 0 {
+            let note = (self.0 + M) % u8::from(OCTAVE) as i8 - M;
+            let b: Self = note.into();
+            debug_assert_eq!(b.octave(), 4, "The base must always be in C4");
+            b
+        } else {
+            let o = u8::from(OCTAVE) as i8;
+            let note = o - (self.0.abs() % o);
+            let b: Self = note.into();
+            debug_assert_eq!(b.octave(), 4);
+            b
+        }
     }
 
-    pub fn note(&self) -> u8 {
-        self.note
+    pub fn octave(&self) -> i8 {
+        let octave = (self.0 + 3) / u8::from(OCTAVE) as i8;
+        let rest = (self.0 + 3) % u8::from(OCTAVE) as i8;
+        if rest >= 0 {
+            octave + 4
+        } else {
+            octave + 3
+        }
     }
 }
 
 impl Display for Note {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.note {
+        write!(f, "{self:X}")
+    }
+}
+
+impl Debug for Note {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "C{}:{:X}:{}", self.octave(), self.base(), self.0)
+    }
+}
+
+impl UpperHex for Note {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let base = self.base();
+        match base.0 {
+            -3 => write!(f, "A"),
+            -2 => write!(f, "A#"),
+            -1 => write!(f, "B"),
             0 => write!(f, "C"),
             1 => write!(f, "C#"),
             2 => write!(f, "D"),
@@ -83,133 +65,245 @@ impl Display for Note {
             6 => write!(f, "F#"),
             7 => write!(f, "G"),
             8 => write!(f, "G#"),
-            9 => write!(f, "A"),
-            10 => write!(f, "A#"),
-            11 => write!(f, "B"),
-            n => panic!("We should not have such note [{n}]"),
+            n => panic!("We should not be here [{n}]"),
         }
     }
 }
 
-impl Octal for Note {
+impl LowerHex for Note {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.note {
-            0 => write!(f, "{}:C", self.octave),
-            1 => write!(f, "{}:C#", self.octave),
-            2 => write!(f, "{}:D", self.octave),
-            3 => write!(f, "{}:D#", self.octave),
-            4 => write!(f, "{}:E", self.octave),
-            5 => write!(f, "{}:F", self.octave),
-            6 => write!(f, "{}:F#", self.octave),
-            7 => write!(f, "{}:G", self.octave),
-            8 => write!(f, "{}:G#", self.octave),
-            9 => write!(f, "{}:A", self.octave),
-            10 => write!(f, "{}:A#", self.octave),
-            11 => write!(f, "{}:B", self.octave),
-            n => panic!("We should not have such note [{n}]"),
+        let base = self.base();
+        match base.0 {
+            -3 => write!(f, "A"),
+            -2 => write!(f, "Bb"),
+            -1 => write!(f, "B"),
+            0 => write!(f, "C"),
+            1 => write!(f, "Db"),
+            2 => write!(f, "D"),
+            3 => write!(f, "Eb"),
+            4 => write!(f, "E"),
+            5 => write!(f, "F"),
+            6 => write!(f, "Gb"),
+            7 => write!(f, "G"),
+            8 => write!(f, "Ab"),
+            n => panic!("We should not be here [{n}]"),
         }
     }
 }
 
-impl From<u8> for Note {
-    fn from(value: u8) -> Self {
-        let octave = value / OCTAVE_NOTE_COUNT;
-        let note = value % OCTAVE_NOTE_COUNT;
-        Note {
-            octave: Octave::from(octave),
-            note,
-        }
-    }
-}
-
-impl From<Note> for u8 {
-    fn from(note: Note) -> Self {
-        let octave = u8::from(note.octave);
-        let note = note.note;
-        octave * OCTAVE_NOTE_COUNT + note
-    }
-}
-
-impl Add<Tone> for Note {
-    type Output = Note;
-
-    fn add(self, tone: Tone) -> Self::Output {
-        let note = u8::from(self) + u8::from(tone);
-        Note::from(note)
-    }
-}
-
-pub struct Notes(Vec<Note>);
-
-impl Notes {
-    pub(crate) fn with_stepper(root: &Note, steps: impl Iterator<Item = Tone>) -> Self {
-        let notes = NoteStepperIterator::new(root, steps).collect::<Vec<_>>();
-        debug_assert!(!notes.is_empty());
-
-        Self(notes)
-    }
-
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    pub fn root(&self) -> &Note {
-        &self.0[0]
-    }
-
-    pub fn as_slice(&self) -> &[Note] {
-        self.0.as_slice()
-    }
-}
-
-impl Debug for Notes {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[{:?}]", self.0)
-    }
-}
-
-impl Display for Notes {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s: Vec<String> = self.0.iter().map(|n| n.to_string()).collect();
-        let s = s.join(", ");
-        write!(f, "[{s}]")
-    }
-}
-
-impl AsRef<[Note]> for Notes {
-    fn as_ref(&self) -> &[Note] {
+impl AsRef<i8> for Note {
+    fn as_ref(&self) -> &i8 {
         &self.0
     }
 }
 
-impl IntoIterator for Notes {
-    type Item = Note;
-
-    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
+impl From<i8> for Note {
+    fn from(value: i8) -> Self {
+        Self(value)
     }
 }
 
-impl Index<usize> for Notes {
-    type Output = Note;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.0[index]
+impl From<Note> for i8 {
+    fn from(note: Note) -> Self {
+        note.0
     }
 }
 
-impl<N> From<N> for Notes
-where
-    N: Iterator<Item = Note>,
-{
-    fn from(notes: N) -> Self {
-        Self(notes.collect())
+impl Add<Tone> for Note {
+    type Output = Self;
+
+    fn add(self, tone: Tone) -> Self::Output {
+        let note = self.0 + u8::from(tone) as i8;
+        note.into()
+    }
+}
+
+impl Sub<Tone> for Note {
+    type Output = Self;
+
+    fn sub(self, tone: Tone) -> Self::Output {
+        let note = self.0 - u8::from(tone) as i8;
+        note.into()
+    }
+}
+
+pub const A: Note = Note(-3);
+pub const A_SHARP: Note = Note(-2);
+pub const B: Note = Note(-1);
+pub const C: Note = Note(0);
+pub const C_SHARP: Note = Note(1);
+pub const D: Note = Note(2);
+pub const D_SHARP: Note = Note(3);
+pub const E: Note = Note(4);
+pub const F: Note = Note(5);
+pub const F_SHARP: Note = Note(6);
+pub const G: Note = Note(7);
+pub const G_SHARP: Note = Note(8);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{SEMI_TONE, TONE};
+
+    #[test]
+    fn display() {
+        assert_eq!(format!("{C}"), "C");
+        assert_eq!(format!("{C_SHARP}"), "C#");
+        assert_eq!(format!("{D}"), "D");
+        assert_eq!(format!("{D_SHARP}"), "D#");
+        assert_eq!(format!("{E}"), "E");
+        assert_eq!(format!("{F}"), "F");
+        assert_eq!(format!("{F_SHARP}"), "F#");
+        assert_eq!(format!("{G}"), "G");
+        assert_eq!(format!("{G_SHARP}"), "G#");
+        assert_eq!(format!("{A}"), "A");
+        assert_eq!(format!("{A_SHARP}"), "A#");
+        assert_eq!(format!("{B}"), "B");
+    }
+
+    #[test]
+    fn debug() {
+        assert_eq!(format!("{A:?}"), "C4:A:-3");
+        assert_eq!(format!("{A_SHARP:?}"), "C4:A#:-2");
+        assert_eq!(format!("{B:?}"), "C4:B:-1");
+        assert_eq!(format!("{C:?}"), "C4:C:0");
+        assert_eq!(format!("{C_SHARP:?}"), "C4:C#:1");
+        assert_eq!(format!("{D:?}"), "C4:D:2");
+        assert_eq!(format!("{D_SHARP:?}"), "C4:D#:3");
+        assert_eq!(format!("{E:?}"), "C4:E:4");
+        assert_eq!(format!("{F:?}"), "C4:F:5");
+        assert_eq!(format!("{F_SHARP:?}"), "C4:F#:6");
+        assert_eq!(format!("{G:?}"), "C4:G:7");
+        assert_eq!(format!("{G_SHARP:?}"), "C4:G#:8");
+    }
+
+    #[test]
+    fn upper_hex() {
+        assert_eq!(format!("{C:X}"), "C");
+        assert_eq!(format!("{C_SHARP:X}"), "C#");
+        assert_eq!(format!("{D:X}"), "D");
+        assert_eq!(format!("{D_SHARP:X}"), "D#");
+        assert_eq!(format!("{E:X}"), "E");
+        assert_eq!(format!("{F:X}"), "F");
+        assert_eq!(format!("{F_SHARP:X}"), "F#");
+        assert_eq!(format!("{G:X}"), "G");
+        assert_eq!(format!("{G_SHARP:X}"), "G#");
+        assert_eq!(format!("{A:X}"), "A");
+        assert_eq!(format!("{A_SHARP:X}"), "A#");
+        assert_eq!(format!("{B:X}"), "B");
+    }
+
+    #[test]
+    fn lower_hex() {
+        assert_eq!(format!("{C:x}"), "C");
+        assert_eq!(format!("{C_SHARP:x}"), "Db");
+        assert_eq!(format!("{D:x}"), "D");
+        assert_eq!(format!("{D_SHARP:x}"), "Eb");
+        assert_eq!(format!("{E:x}"), "E");
+        assert_eq!(format!("{F:x}"), "F");
+        assert_eq!(format!("{F_SHARP:x}"), "Gb");
+        assert_eq!(format!("{G:x}"), "G");
+        assert_eq!(format!("{G_SHARP:x}"), "Ab");
+        assert_eq!(format!("{A:x}"), "A");
+        assert_eq!(format!("{A_SHARP:x}"), "Bb");
+        assert_eq!(format!("{B:x}"), "B");
+    }
+
+    #[test]
+    fn i8_to_note() {
+        assert_eq!(Note::from(-3), A);
+        assert_eq!(Note::from(-2), A_SHARP);
+        assert_eq!(Note::from(-1), B);
+        assert_eq!(Note::from(0), C);
+        assert_eq!(Note::from(1), C_SHARP);
+        assert_eq!(Note::from(2), D);
+        assert_eq!(Note::from(3), D_SHARP);
+        assert_eq!(Note::from(4), E);
+        assert_eq!(Note::from(5), F);
+        assert_eq!(Note::from(6), F_SHARP);
+        assert_eq!(Note::from(7), G);
+        assert_eq!(Note::from(8), G_SHARP);
+    }
+
+    #[test]
+    fn note_to_i8() {
+        assert_eq!(i8::from(A), -3);
+        assert_eq!(i8::from(A_SHARP), -2);
+        assert_eq!(i8::from(B), -1);
+        assert_eq!(i8::from(C), 0);
+        assert_eq!(i8::from(C_SHARP), 1);
+        assert_eq!(i8::from(D), 2);
+        assert_eq!(i8::from(D_SHARP), 3);
+        assert_eq!(i8::from(E), 4);
+        assert_eq!(i8::from(F), 5);
+        assert_eq!(i8::from(F_SHARP), 6);
+        assert_eq!(i8::from(G), 7);
+        assert_eq!(i8::from(G_SHARP), 8);
+    }
+
+    #[test]
+    fn octave() {
+        assert_eq!(A.octave(), 4);
+        assert_eq!(A_SHARP.octave(), 4);
+        assert_eq!(B.octave(), 4);
+        assert_eq!(C.octave(), 4);
+        assert_eq!(C_SHARP.octave(), 4);
+        assert_eq!(D.octave(), 4);
+        assert_eq!(D_SHARP.octave(), 4);
+        assert_eq!(E.octave(), 4);
+        assert_eq!(F.octave(), 4);
+        assert_eq!(F_SHARP.octave(), 4);
+        assert_eq!(G.octave(), 4);
+        assert_eq!(G_SHARP.octave(), 4);
+
+        let note = Note::from(9);
+        assert_eq!(note.base(), A);
+        assert_eq!(note.octave(), 5);
+
+        let note = Note::from(9 + 12);
+        assert_eq!(note.base(), A);
+        assert_eq!(note.octave(), 6);
+
+        let note = Note::from(-4);
+        assert_eq!(note.base(), G_SHARP);
+        assert_eq!(note.octave(), 3);
+
+        let note = Note::from(-4 - 12);
+        assert_eq!(note.base(), G_SHARP);
+        assert_eq!(note.octave(), 2);
+    }
+
+    #[test]
+    fn add() {
+        assert_eq!(C + SEMI_TONE, C_SHARP);
+        assert_eq!(C + TONE, D);
+        assert_eq!(C + Tone::from(3), D_SHARP);
+
+        let note = G_SHARP + SEMI_TONE;
+        assert_eq!(note.octave(), 5);
+        assert_eq!(note.base(), A);
+
+        let note = G_SHARP + TONE;
+        assert_eq!(note.octave(), 5);
+        assert_eq!(note.base(), A_SHARP);
+    }
+
+    #[test]
+    fn sub() {
+        assert_eq!(G - SEMI_TONE, F_SHARP);
+        assert_eq!(G - TONE, F);
+
+        let note = C - SEMI_TONE;
+        assert_eq!(note.octave(), 4);
+        assert_eq!(note.base(), B);
+
+        let note = C - TONE;
+        assert_eq!(note.octave(), 4);
+        assert_eq!(note.base(), A_SHARP);
+
+        let note = A - SEMI_TONE;
+        assert_eq!(note.octave(), 3);
+        assert_eq!(note.base(), G_SHARP);
     }
 }
 
@@ -219,19 +313,24 @@ pub(crate) struct NoteStepperIterator<S> {
     steps: S,
 }
 
-impl<S> NoteStepperIterator<S> {
-    pub(crate) fn new(tonic: &Note, steps: S) -> Self {
+impl<S, T> NoteStepperIterator<S>
+where
+    S: Iterator<Item = T>,
+    Tone: From<T>,
+{
+    pub(crate) fn new(root: Note, steps: S) -> Self {
         Self {
-            cur_note: *tonic,
+            cur_note: root,
             started: false,
             steps,
         }
     }
 }
 
-impl<S> Iterator for NoteStepperIterator<S>
+impl<S, T> Iterator for NoteStepperIterator<S>
 where
-    S: Iterator<Item = Tone>,
+    S: Iterator<Item = T>,
+    Tone: From<T>,
 {
     type Item = Note;
 
@@ -243,170 +342,7 @@ where
 
         self.steps
             .next()
-            .map(|s| self.cur_note + s)
+            .map(|s| self.cur_note + Tone::from(s))
             .inspect(|n| self.cur_note = *n)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    mod note {
-        use super::*;
-        use crate::{C5, H, W};
-
-        #[test]
-        fn display() {
-            assert_eq!(format!("{C}"), "C");
-            assert_eq!(format!("{C_SHARP}"), "C#");
-            assert_eq!(format!("{D}"), "D");
-            assert_eq!(format!("{D_SHARP}"), "D#");
-            assert_eq!(format!("{E}"), "E");
-            assert_eq!(format!("{F}"), "F");
-            assert_eq!(format!("{F_SHARP}"), "F#");
-            assert_eq!(format!("{G}"), "G");
-            assert_eq!(format!("{G_SHARP}"), "G#");
-            assert_eq!(format!("{A}"), "A");
-            assert_eq!(format!("{A_SHARP}"), "A#");
-            // assert_eq!(format!("{B}"), "B");
-        }
-
-        #[test]
-        fn octal() {
-            assert_eq!(format!("{C:o}"), "C4:C");
-            assert_eq!(format!("{C_SHARP:o}"), "C4:C#");
-            assert_eq!(format!("{D:o}"), "C4:D");
-            assert_eq!(format!("{D_SHARP:o}"), "C4:D#");
-            assert_eq!(format!("{E:o}"), "C4:E");
-            assert_eq!(format!("{F:o}"), "C4:F");
-            assert_eq!(format!("{F_SHARP:o}"), "C4:F#");
-            assert_eq!(format!("{G:o}"), "C4:G");
-            assert_eq!(format!("{G_SHARP:o}"), "C4:G#");
-            assert_eq!(format!("{A:o}"), "C4:A");
-            assert_eq!(format!("{A_SHARP:o}"), "C4:A#");
-            assert_eq!(format!("{B:o}"), "C4:B");
-        }
-
-        #[test]
-        fn u8_to_note() {
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 0), C);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 1), C_SHARP);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 2), D);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 3), D_SHARP);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 4), E);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 5), F);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 6), F_SHARP);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 7), G);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 8), G_SHARP);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 9), A);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 10), A_SHARP);
-            assert_eq!(Note::from(4 * OCTAVE_NOTE_COUNT + 11), B);
-        }
-
-        #[test]
-        fn note_to_u8() {
-            assert_eq!(u8::from(C), 4 * OCTAVE_NOTE_COUNT + 0);
-            assert_eq!(u8::from(C_SHARP), 4 * OCTAVE_NOTE_COUNT + 1);
-            assert_eq!(u8::from(D), 4 * OCTAVE_NOTE_COUNT + 2);
-            assert_eq!(u8::from(D_SHARP), 4 * OCTAVE_NOTE_COUNT + 3);
-            assert_eq!(u8::from(E), 4 * OCTAVE_NOTE_COUNT + 4);
-            assert_eq!(u8::from(F), 4 * OCTAVE_NOTE_COUNT + 5);
-            assert_eq!(u8::from(F_SHARP), 4 * OCTAVE_NOTE_COUNT + 6);
-            assert_eq!(u8::from(G), 4 * OCTAVE_NOTE_COUNT + 7);
-            assert_eq!(u8::from(G_SHARP), 4 * OCTAVE_NOTE_COUNT + 8);
-            assert_eq!(u8::from(A), 4 * OCTAVE_NOTE_COUNT + 9);
-            assert_eq!(u8::from(A_SHARP), 4 * OCTAVE_NOTE_COUNT + 10);
-            assert_eq!(u8::from(B), 4 * OCTAVE_NOTE_COUNT + 11);
-        }
-
-        #[test]
-        fn add() {
-            assert_eq!(C + H, C_SHARP);
-            assert_eq!(C + W, D);
-            assert_eq!(C + Tone::from(3), D_SHARP);
-
-            let note = B + H;
-            assert_eq!(note.octave, C5);
-            assert_eq!(note.note, 0);
-
-            let note = B + W;
-            assert_eq!(note.octave, C5);
-            assert_eq!(note.note, 1);
-        }
-    }
-
-    mod notes {
-        use super::*;
-        use crate::H;
-
-        #[test]
-        fn with_stepper() {
-            let notes = Notes::with_stepper(&C, [H, H].into_iter());
-            assert_eq!(notes.len(), 3);
-            assert_eq!(notes.root(), &C);
-        }
-
-        #[test]
-        fn display() {
-            let notes = Notes::with_stepper(&C, [H, H].into_iter());
-            assert_eq!(notes.to_string(), "[C, C#, D]");
-        }
-
-        #[test]
-        fn index() {
-            let notes = Notes::with_stepper(&C, [H, H].into_iter());
-            assert_eq!(notes[0], C);
-            assert_eq!(notes[1], C_SHARP);
-            assert_eq!(notes[2], D);
-        }
-
-        #[test]
-        fn into_iter() {
-            let mut notes = Notes::with_stepper(&C, [H, H].into_iter()).into_iter();
-
-            assert_eq!(notes.next(), Some(C));
-            assert_eq!(notes.next(), Some(C_SHARP));
-            assert_eq!(notes.next(), Some(D));
-            assert!(notes.next().is_none());
-        }
-
-        #[test]
-        fn as_ref() {
-            let notes = Notes::with_stepper(&C, [H, H].into_iter());
-            let notes = notes.as_ref();
-            assert_eq!(notes[0], C);
-            assert_eq!(notes[1], C_SHARP);
-            assert_eq!(notes[2], D);
-        }
-
-        #[test]
-        fn from_iter() {
-            let notes = [C, C_SHARP, D];
-            let notes = Notes::from(notes.into_iter());
-
-            let mut iter = notes.into_iter();
-            assert_eq!(iter.next(), Some(C));
-            assert_eq!(iter.next(), Some(C_SHARP));
-            assert_eq!(iter.next(), Some(D));
-            assert!(iter.next().is_none());
-        }
-    }
-
-    mod stepper {
-        use super::*;
-        use crate::H;
-
-        #[test]
-        fn stepper() {
-            let tonic = C;
-            let steps = [H, H];
-            let mut iter = NoteStepperIterator::new(&tonic, steps.into_iter());
-
-            assert_eq!(iter.next(), Some(C));
-            assert_eq!(iter.next(), Some(C_SHARP));
-            assert_eq!(iter.next(), Some(D));
-            assert!(iter.next().is_none());
-        }
     }
 }
