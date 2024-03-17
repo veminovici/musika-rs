@@ -2,6 +2,8 @@ use super::{Chord, InnerChord};
 use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
+/// Implements the **major** chord.
+/// [C chord](https://www.pianochord.org/c-major.html) (C - E - G)
 pub struct Major(InnerChord);
 
 impl Major {

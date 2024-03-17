@@ -2,6 +2,8 @@ use super::{Chord, InnerChord};
 use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
+/// Implements the **dominant 7** chord.
+/// [C7 chord](https://www.pianochord.org/c7.html) (C - E - G - Bb)
 pub struct Dominant7(InnerChord);
 
 impl Dominant7 {
@@ -19,25 +21,25 @@ impl From<Note> for Dominant7 {
 
 impl Display for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}Dom7", self.root())
+        write!(f, "{}7", self.root())
     }
 }
 
 impl Debug for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Chord: Dom7, {:?}, {:?}", self.root(), self.0)
+        write!(f, "Chord: 7, {:?}, {:?}", self.root(), self.0)
     }
 }
 
 impl UpperHex for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:X}Dom7 {:X}", self.root(), self.0)
+        write!(f, "{:X}7 {:X}", self.root(), self.0)
     }
 }
 
 impl LowerHex for Dominant7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:x}Dom7 {:x}", self.root(), self.0)
+        write!(f, "{:x}7 {:x}", self.root(), self.0)
     }
 }
 
@@ -85,12 +87,12 @@ mod tests {
     #[test]
     fn show() {
         let chord = Dominant7::new(C);
-        assert_eq!(format!("{chord}"), "CDom7");
+        assert_eq!(format!("{chord}"), "C7");
         assert_eq!(
             format!("{chord:?}"),
-            "Chord: Dom7, C4:C:0, [C4:C:0, C4:E:4, C4:G:7, C5:A#:10]"
+            "Chord: 7, C4:C:0, [C4:C:0, C4:E:4, C4:G:7, C5:A#:10]"
         );
-        assert_eq!(format!("{chord:X}"), "CDom7 [C, E, G, A#]");
-        assert_eq!(format!("{chord:x}"), "CDom7 [C, E, G, Bb]");
+        assert_eq!(format!("{chord:X}"), "C7 [C, E, G, A#]");
+        assert_eq!(format!("{chord:x}"), "C7 [C, E, G, Bb]");
     }
 }

@@ -2,6 +2,8 @@ use super::{Chord, InnerChord};
 use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
+/// Implements the **diminished 7** chord.
+/// [Cdim7 chord](https://www.pianochord.org/c-dim7.html) (C - Eb - Gb - A)
 pub struct Diminished7(InnerChord);
 
 impl Diminished7 {

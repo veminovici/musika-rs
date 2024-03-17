@@ -2,6 +2,8 @@ use super::{Chord, InnerChord};
 use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
+/// Implements the **minor** chord.
+/// [Cm chord](https://www.pianochord.org/cm.html) (C - Eb - G)
 pub struct Minor(InnerChord);
 
 impl Minor {
@@ -19,25 +21,25 @@ impl From<Note> for Minor {
 
 impl Display for Minor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}min", self.root())
+        write!(f, "{}m", self.root())
     }
 }
 
 impl Debug for Minor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Chord: Min, {:?}, {:?}", self.root(), self.0)
+        write!(f, "Chord: m, {:?}, {:?}", self.root(), self.0)
     }
 }
 
 impl UpperHex for Minor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:X}Min {:X}", self.root(), self.0)
+        write!(f, "{:X}m {:X}", self.root(), self.0)
     }
 }
 
 impl LowerHex for Minor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:x}Min {:x}", self.root(), self.0)
+        write!(f, "{:x}m {:x}", self.root(), self.0)
     }
 }
 
@@ -80,5 +82,17 @@ mod tests {
 
         let notes = chord.into_iter().collect::<Vec<_>>();
         assert_eq!(notes, vec![C, D_SHARP, G]);
+    }
+
+    #[test]
+    fn show() {
+        let chord = Minor::new(C);
+        assert_eq!(format!("{chord}"), "Cm");
+        assert_eq!(
+            format!("{chord:?}"),
+            "Chord: m, C4:C:0, [C4:C:0, C4:D#:3, C4:G:7]"
+        );
+        assert_eq!(format!("{chord:X}"), "Cm [C, D#, G]");
+        assert_eq!(format!("{chord:x}"), "Cm [C, Eb, G]");
     }
 }
