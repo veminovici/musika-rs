@@ -3,6 +3,13 @@ use std::fmt::{Debug, Display};
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 pub struct Tone(u8);
 
+impl Tone {
+    /// Returns the inner value of the tone.
+    pub(crate) const fn inner(&self) -> u8 {
+        self.0
+    }
+}
+
 pub const SEMI_TONE: Tone = Tone(1);
 pub const TONE: Tone = Tone(2);
 pub const OCTAVE: Tone = Tone(12);

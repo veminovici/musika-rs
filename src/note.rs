@@ -11,18 +11,19 @@ use super::{Tone, OCTAVE};
 pub struct Note(i8);
 
 impl Note {
-    pub fn base(&self) -> Self {
-        const M: i8 = 3;
-        let o = u8::from(OCTAVE) as i8;
+    const M: i8 = 3;
+    const O: i8 = OCTAVE.inner() as i8;
 
-        let mut note = self.0 + M;
+    /// Returns the base note (the one in the C4 octave)
+    pub fn base(&self) -> Self {
+        let mut note = self.0 + Self::M;
         if note < 0 {
-            let p = note / o;
-            note += (p.abs() + 1) * o;
+            let p = note / Self::O;
+            note += (p.abs() + 1) * Self::O;
         }
 
-        note %= o;
-        note -= M;
+        note %= Self::O;
+        note -= Self::M;
 
         let b: Self = note.into();
         debug_assert_eq!(
@@ -35,13 +36,14 @@ impl Note {
         b
     }
 
+    /// Returns the octave for the given note (eg. C4)
     pub fn octave(&self) -> i8 {
-        let octave = (self.0 + 3) / u8::from(OCTAVE) as i8;
-        let rest = (self.0 + 3) % u8::from(OCTAVE) as i8;
+        let octave = (self.0 + Self::M) / Self::O;
+        let rest = (self.0 + Self::M) % Self::O;
         if rest >= 0 {
-            octave + 4
+            octave + Self::M + 1
         } else {
-            octave + 3
+            octave + Self::M
         }
     }
 
@@ -49,30 +51,93 @@ impl Note {
     // Functions which build chords
     //
 
+    /// Builds a diminished7 chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.diminished7();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn diminished7(self) -> chords::Diminished7 {
         chords::Diminished7::from(self)
     }
 
+    /// Builds a dominant7 choard with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.dominant7();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn dominant7(self) -> chords::Dominant7 {
         chords::Dominant7::from(self)
     }
 
+    /// Builds a major chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.major();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn major(self) -> chords::Major {
         chords::Major::from(self)
     }
 
+    /// Builds a major7 chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.major7();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn major7(self) -> chords::Major7 {
         chords::Major7::from(self)
     }
 
+    /// Builds a minor chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.minor();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn minor(self) -> chords::Minor {
         chords::Minor::from(self)
     }
 
+    /// Builds a minor7 chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.minor7();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn minor7(self) -> chords::Minor7 {
         chords::Minor7::from(self)
     }
 
+    /// Builds a minor7b5 chord with the root in the current note.
+    ///
+    /// # Example
+    /// ```
+    /// use musika_rs::*;
+    ///
+    /// let chord = C.minor7b5();
+    /// println!("{:X}", chord);
+    /// ```
     pub fn minor7b5(self) -> chords::Minor7b5 {
         chords::Minor7b5::from(self)
     }
