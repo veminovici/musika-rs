@@ -1,4 +1,4 @@
-pub mod chord;
+pub mod chords;
 mod note;
 mod tone;
 
