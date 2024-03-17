@@ -36,7 +36,7 @@ pub trait Chord: IntoIterator<Item = Note> {
     fn down_one_octave(self) -> Self;
 }
 
-pub struct InnerChord(Vec<Note>);
+pub(crate) struct InnerChord(Vec<Note>);
 
 impl InnerChord {
     fn new(n: impl Iterator<Item = Note>) -> Self {
