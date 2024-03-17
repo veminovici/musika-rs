@@ -51,6 +51,10 @@ impl Note {
     // Functions which build chords
     //
 
+    pub fn diminished(self) -> chords::Diminished {
+        chords::Diminished::from(self)
+    }
+
     /// Builds a diminished7 chord with the root in the current note.
     ///
     /// # Example

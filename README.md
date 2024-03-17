@@ -31,6 +31,19 @@ println!("Dom7 C: {chord:X}");
 
 You can find more examples in the [examples][examples_folder] folder.
 
+## Chords
+The create allows you to build the following chords:
+- [major](major_chord_url)
+- [major7][major7_chord_url]
+- [minor][minor_chord_url]
+- [minor7][minor7_chord_url]
+- [minor7b5][minor7b5_chord_url]
+- [diminished][dim_chord_url]
+- [diminished7][dim7_chord_url]
+- [dominant7][dom7_chord_url]
+
+You can find all the chords in the [chords][chords_folder] folder.
+
 ## Piano Exercises
 You can find all piano exercises implemented in the [practices][practices_file] file. You can see the practices by running:
 ```bsh
@@ -81,3 +94,12 @@ println!("{:X}", C.major()); // C [C, E, G]
 [estonia_url]: https://goo.gl/maps/DmB9ewY2R3sPGFnTA
 [examples_folder]: ./examples/
 [practices_file]: ./examples/practices.rs
+[chords_folder]: ./src/chords/
+[major_chord_url]: https://www.pianochord.org/c-major.html
+[major7_chord_url]: https://www.pianochord.org/cmaj7.html
+[minor_chord_url]: https://www.pianochord.org/cm.html
+[minor7_chord_url]: https://www.pianochord.org/cm7.html
+[minor7b5_chord_url]: https://www.pianochord.org/cm7b5.html
+[dim_chord_url]: https://www.pianochord.org/c-dim.html
+[dim7_chord_url]: https://www.pianochord.org/c-dim7.html
+[dom7_chord_url]: https://www.pianochord.org/c7.html

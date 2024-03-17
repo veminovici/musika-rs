@@ -26,7 +26,7 @@ fn exercise2() {
 
 fn exercise3() {
     println!();
-    println!("Exercise 2: | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |");
+    println!("Exercise 3: | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |");
 
     let cmaj = C.major();
     let gmaj = G.major();
@@ -73,8 +73,23 @@ fn exercise3() {
     }
 }
 
+fn exercise4() {
+    println!();
+    println!("Exercise 4: | C | F | Bdim | Em | Am | Dm | G | C |");
+
+    println!("{:X}", C.major());
+    println!("{:X}", F.major());
+    println!("{:X}", B.diminished());
+    println!("{:X}", E.minor());
+    println!("{:X}", A.minor());
+    println!("{:X}", D.minor());
+    println!("{:X}", G.major());
+    println!("{:X}", C.major());
+}
+
 fn main() {
     exercise1();
     exercise2();
     exercise3();
+    exercise4();
 }

@@ -1,3 +1,4 @@
+mod diminished;
 mod diminished7;
 mod dominant7;
 mod major;
@@ -6,6 +7,7 @@ mod minor;
 mod minor7;
 mod minor7b5;
 
+pub use diminished::*;
 pub use diminished7::*;
 pub use dominant7::*;
 pub use major::*;
