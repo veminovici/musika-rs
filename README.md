@@ -44,37 +44,33 @@ The create allows you to build the following chords:
 
 You can find all the chords in the [chords][chords_folder] folder.
 
+```rust
+use musika_rs::*
+
+let cmaj = C.major();
+println!("{:X}", cmaj);
+
+let amin = A.minor();
+println!("{:X}", amin);
+
+let cmaj7 = C.major7();
+println!("{:X}", cmaj7);
+
+```
+
 ## Piano Exercises
-You can find all piano exercises implemented in the [practices][practices_file] file. You can see the practices by running:
+You can find all piano exercises implemented in the exercises examples. You can see the practices by running:
 ```bsh
-cargo run --example practices
+cargo run --example exercise1
+cargo run --example exercise2
+cargo run --example exercise3
+cargo run --example exercise4
 ```
 
-### Exercise 1 (| C - Am | F - G |)
-```rust
-use musika_rs::*;
-
-println!("Exercise 1: (| C - Am | F - G |)");
-println!("{:X}", C.major()); // C [C, E, G]
-println!("{:X}", A.minor()); // Am [A, C, E]
-println!("{:X}", F.major()); // F [F, A, C]
-println!("{:X}", G.major()); // G [G, B, D]
-```
-
-### Exercise 2 (| C - G | Am - F | C - G | F - Em - Dm - C |)
-```rust
-println!("Exercise 2: (| C - G | Am - F | C - G | F - Em - Dm - C |)");
-println!("{:X}", C.major()); // C [C, E, G]
-println!("{:X}", G.major()); // G [G, B, D]
-println!("{:X}", A.minor()); // Am [A, C, E]
-println!("{:X}", F.major()); // F [F, A, C]
-println!("{:X}", C.major()); // C [C, E, G]
-println!("{:X}", G.major()); // G [G, B, D]
-println!("{:X}", F.major()); // F [F, A, C]
-println!("{:X}", E.minor()); // Em [E, G, B]
-println!("{:X}", D.minor()); // Dm [D, F, A]
-println!("{:X}", C.major()); // C [C, E, G]
-```
+- [Exercise 1][exercise1_file] | C - Am | F - G |
+- [Exercise 2][exercise2_file] | C - G | Am - F | C - G | F - Em - Dm - C |
+- [Exercise 3][exercise3_file] | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |
+- [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
 
 ## Resources
 - [Piano Chords][piano_chords_url]
@@ -103,3 +99,7 @@ println!("{:X}", C.major()); // C [C, E, G]
 [dim_chord_url]: https://www.pianochord.org/c-dim.html
 [dim7_chord_url]: https://www.pianochord.org/c-dim7.html
 [dom7_chord_url]: https://www.pianochord.org/c7.html
+[exercise1_file]: ./examples/exercise1.rs
+[exercise2_file]: ./examples/exercise2.rs
+[exercise3_file]: ./examples/exercise3.rs
+[exercise4_file]: ./examples/exercise4.rs
