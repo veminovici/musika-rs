@@ -1,11 +1,11 @@
 use musika_rs::*;
 
 fn exercise() {
-    println!("Exercise 1: (C - Am - F - G");
-    println!("{:X}", chords::Major::from(C)); // C
-    println!("{:X}", chords::Minor::from(A)); // Amin
-    println!("{:X}", chords::Major::from(F)); // F
-    println!("{:X}", chords::Major::from(G)); // G
+    println!("Exercise 1: (C - Am - F - G)");
+    println!("{:X}", C.major()); // C [C, E, G]
+    println!("{:X}", A.minor()); // Am [A, C, E]
+    println!("{:X}", F.major()); // F [F, A, C]
+    println!("{:X}", G.major()); // G [G, B, D]
 }
 
 fn main() {

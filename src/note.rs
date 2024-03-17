@@ -3,6 +3,8 @@ use std::{
     ops::{Add, Sub},
 };
 
+use crate::chords;
+
 use super::{Tone, OCTAVE};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -41,6 +43,38 @@ impl Note {
         } else {
             octave + 3
         }
+    }
+
+    //
+    // Functions which build chords
+    //
+
+    pub fn diminished7(self) -> chords::Diminished7 {
+        chords::Diminished7::from(self)
+    }
+
+    pub fn dominant7(self) -> chords::Dominant7 {
+        chords::Dominant7::from(self)
+    }
+
+    pub fn major(self) -> chords::Major {
+        chords::Major::from(self)
+    }
+
+    pub fn major7(self) -> chords::Major7 {
+        chords::Major7::from(self)
+    }
+
+    pub fn minor(self) -> chords::Minor {
+        chords::Minor::from(self)
+    }
+
+    pub fn minor7(self) -> chords::Minor7 {
+        chords::Minor7::from(self)
+    }
+
+    pub fn minor7b5(self) -> chords::Minor7b5 {
+        chords::Minor7b5::from(self)
     }
 }
 

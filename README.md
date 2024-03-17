@@ -32,17 +32,20 @@ println!("Dom7 C: {chord:X}");
 You can find more examples in the [examples][examples_folder] folder.
 
 ## Piano Exercises
-You can find all piano exercises implemented in the [practices][practices_file] file.
+You can find all piano exercises implemented in the [practices][practices_file] file. You can see the practices by running:
+```bsh
+cargo run --example practices
+```
 
 ### Exercise 1 (C - Am - F - G)
 ```rust
 use musika_rs::*;
 
-println!("Exercise 1: (C - Am - F - G");
-println!("{:X}", chords::Major::from(C)); // C
-println!("{:X}", chords::Minor::from(A)); // Amin
-println!("{:X}", chords::Major::from(F)); // F
-println!("{:X}", chords::Major::from(G)); // G
+println!("Exercise 1: (C - Am - F - G)");
+println!("{:X}", C.major()); // C [C, E, G]
+println!("{:X}", A.minor()); // Am [A, C, E]
+println!("{:X}", F.major()); // F [F, A, C]
+println!("{:X}", G.major()); // G [G, B, D]
 ```
 
 ## Resources
