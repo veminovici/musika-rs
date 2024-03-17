@@ -2,46 +2,46 @@ use super::{Chord, InnerChord};
 use crate::Note;
 use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
-pub struct Minor(InnerChord);
+pub struct Minor7(InnerChord);
 
-impl Minor {
+impl Minor7 {
     pub fn new(root: Note) -> Self {
-        let steps = [3, 4];
+        let steps = [3, 4, 3];
         Self(InnerChord::with_steps(root, steps.into_iter()))
     }
 }
 
-impl From<Note> for Minor {
+impl From<Note> for Minor7 {
     fn from(root: Note) -> Self {
-        Minor::new(root)
+        Minor7::new(root)
     }
 }
 
-impl Display for Minor {
+impl Display for Minor7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}min", self.root())
+        write!(f, "{}min7", self.root())
     }
 }
 
-impl Debug for Minor {
+impl Debug for Minor7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Chord: Min, {:?}, {:?}", self.root(), self.0)
+        write!(f, "Chord: Min7, {:?}, {:?}", self.root(), self.0)
     }
 }
 
-impl UpperHex for Minor {
+impl UpperHex for Minor7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:X}Min {:X}", self.root(), self.0)
+        write!(f, "{:X}Min7 {:X}", self.root(), self.0)
     }
 }
 
-impl LowerHex for Minor {
+impl LowerHex for Minor7 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:x}Min {:x}", self.root(), self.0)
     }
 }
 
-impl IntoIterator for Minor {
+impl IntoIterator for Minor7 {
     type Item = Note;
 
     type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
@@ -51,7 +51,7 @@ impl IntoIterator for Minor {
     }
 }
 
-impl Chord for Minor {
+impl Chord for Minor7 {
     fn root(&self) -> &Note {
         self.0.root()
     }
@@ -68,17 +68,17 @@ impl Chord for Minor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{C, D_SHARP, G};
+    use crate::{A_SHARP, C, D_SHARP, G};
 
     #[test]
     fn new() {
-        let chord = Minor::new(C);
+        let chord = Minor7::new(C);
 
         assert_eq!(chord.root(), &C);
-        assert_eq!(chord.len(), 3);
+        assert_eq!(chord.len(), 4);
         assert!(!chord.is_empty());
 
-        let notes = chord.into_iter().collect::<Vec<_>>();
-        assert_eq!(notes, vec![C, D_SHARP, G]);
+        let notes = chord.into_iter().map(|n| n.base()).collect::<Vec<_>>();
+        assert_eq!(notes, vec![C, D_SHARP, G, A_SHARP]);
     }
 }
