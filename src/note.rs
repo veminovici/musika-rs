@@ -11,19 +11,26 @@ pub struct Note(i8);
 impl Note {
     pub fn base(&self) -> Self {
         const M: i8 = 3;
+        let o = u8::from(OCTAVE) as i8;
 
-        if (self.0 + M) >= 0 {
-            let note = (self.0 + M) % u8::from(OCTAVE) as i8 - M;
-            let b: Self = note.into();
-            debug_assert_eq!(b.octave(), 4, "The base must always be in C4");
-            b
-        } else {
-            let o = u8::from(OCTAVE) as i8;
-            let note = o - (self.0.abs() % o);
-            let b: Self = note.into();
-            debug_assert_eq!(b.octave(), 4);
-            b
+        let mut note = self.0 + M;
+        if note < 0 {
+            let p = note / o;
+            note += (p.abs() + 1) * o;
         }
+
+        note %= o;
+        note -= M;
+
+        let b: Self = note.into();
+        debug_assert_eq!(
+            b.octave(),
+            4,
+            "The base is not C4: self={} note={}",
+            self.0,
+            note
+        );
+        b
     }
 
     pub fn octave(&self) -> i8 {
@@ -268,7 +275,7 @@ mod tests {
         assert_eq!(note.base(), G_SHARP);
         assert_eq!(note.octave(), 3);
 
-        let note = Note::from(-4 - 12);
+        let note = note - OCTAVE;
         assert_eq!(note.base(), G_SHARP);
         assert_eq!(note.octave(), 2);
     }

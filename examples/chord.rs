@@ -1,4 +1,7 @@
-use musika_rs::{chord, C, C_SHARP};
+use musika_rs::{
+    chord::{self},
+    C, C_SHARP,
+};
 
 fn main() {
     let chord = chord::Major::from(C);

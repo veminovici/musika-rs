@@ -36,7 +36,7 @@ pub trait Chord: IntoIterator<Item = Note> {
     fn down_one_octave(self) -> Self;
 }
 
-pub(crate) struct InnerChord(Vec<Note>);
+pub struct InnerChord(Vec<Note>);
 
 impl InnerChord {
     fn new(n: impl Iterator<Item = Note>) -> Self {
@@ -135,5 +135,32 @@ impl IntoIterator for InnerChord {
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{A, C, D, E, F, G};
+
+    use super::*;
+
+    #[test]
+    fn move_up() {
+        let chord1 = InnerChord::new([C, D, E, F, G, A].into_iter());
+        let chord2 = InnerChord::new([C, D, E, F, G, A].into_iter()).up_one_octave();
+
+        let notes1 = chord1.into_iter().map(|n| n.base()).collect::<Vec<_>>();
+        let notes2 = chord2.into_iter().map(|n| n.base()).collect::<Vec<_>>();
+        assert_eq!(notes1, notes2)
+    }
+
+    #[test]
+    fn move_down() {
+        let chord1 = InnerChord::new([C, D, E, F, G, A].into_iter());
+        let chord2 = InnerChord::new([C, D, E, F, G, A].into_iter()).down_one_octave();
+
+        let notes1 = chord1.into_iter().map(|n| n.base()).collect::<Vec<_>>();
+        let notes2 = chord2.into_iter().map(|n| n.base()).collect::<Vec<_>>();
+        assert_eq!(notes1, notes2)
     }
 }
