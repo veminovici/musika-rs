@@ -1,7 +1,9 @@
+mod dominant7;
 mod major;
 mod major7;
 mod minor;
 
+pub use dominant7::*;
 pub use major::*;
 pub use major7::*;
 pub use minor::*;
