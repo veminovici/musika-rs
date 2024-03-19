@@ -31,6 +31,11 @@ pub fn dom13(root: Note) -> Chords {
     Chords::dominant_with_steps("13", root, steps.into_iter())
 }
 
+pub fn dom13b9b13(root: Note) -> Chords {
+    let steps = [4, 3, 3, 3, 4, 3];
+    Chords::dominant_with_steps("13b9b13", root, steps.into_iter())
+}
+
 pub fn dominant_chords(root: Note) -> impl Iterator<Item = Chords> {
     [
         dom7(root),
@@ -39,6 +44,7 @@ pub fn dominant_chords(root: Note) -> impl Iterator<Item = Chords> {
         dom9(root),
         dom11(root),
         dom13(root),
+        dom13b9b13(root),
     ]
     .into_iter()
 }

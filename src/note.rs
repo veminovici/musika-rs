@@ -115,6 +115,10 @@ impl Note {
         chords::dom13(self)
     }
 
+    pub fn dom13b9b13(self) -> chords::Chords {
+        chords::dom13b9b13(self)
+    }
+
     pub fn dominant_chords(self) -> impl Iterator<Item = Chords> {
         chords::dominant_chords(self)
     }
@@ -205,6 +209,10 @@ impl Note {
 
     pub fn minor_chords(self) -> impl Iterator<Item = Chords> {
         chords::minor_chords(self)
+    }
+
+    pub fn all_chords(self) -> impl Iterator<Item = Chords> {
+        chords::Chords::all_chords(self)
     }
 }
 

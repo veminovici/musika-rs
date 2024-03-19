@@ -1,5 +1,5 @@
 use crate::chords::Chords;
-use std::fmt::Display;
+use std::fmt::{Display, LowerHex, UpperHex};
 
 pub enum BarElement {
     Silence(u8),
@@ -10,7 +10,25 @@ impl Display for BarElement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             BarElement::Silence(_) => write!(f, "_"),
-            BarElement::Chord(chord, _) => write!(f, "{}", chord),
+            BarElement::Chord(chord, _) => write!(f, "{chord}"),
+        }
+    }
+}
+
+impl UpperHex for BarElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BarElement::Silence(_) => write!(f, "_"),
+            BarElement::Chord(chord, _) => write!(f, "{chord:X}"),
+        }
+    }
+}
+
+impl LowerHex for BarElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BarElement::Silence(_) => write!(f, "_"),
+            BarElement::Chord(chord, _) => write!(f, "{chord:x}"),
         }
     }
 }
@@ -46,20 +64,44 @@ impl Display for Bar {
         let s = self
             .0
             .iter()
-            .map(|e| e.to_string())
+            .map(|e| format!("{e}"))
             .collect::<Vec<String>>()
             .join(" - ");
         write!(f, "{s}")
     }
 }
 
-pub fn show(bars: impl Iterator<Item = Bar>) -> String {
-    let s = bars
-        .map(|b| b.to_string())
-        .collect::<Vec<String>>()
-        .join(" | ");
-    format!("| {s} |")
+impl UpperHex for Bar {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = self
+            .0
+            .iter()
+            .map(|e| format!("{e:X}"))
+            .collect::<Vec<String>>()
+            .join(" - ");
+        write!(f, "{s}")
+    }
 }
+
+impl LowerHex for Bar {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = self
+            .0
+            .iter()
+            .map(|e| format!("{e:x}"))
+            .collect::<Vec<String>>()
+            .join(" - ");
+        write!(f, "{s}")
+    }
+}
+
+// pub fn show(bars: impl Iterator<Item = Bar>) -> String {
+//     let s = bars
+//         .map(|b| b.to_string())
+//         .collect::<Vec<String>>()
+//         .join(" | ");
+//     format!("| {s} |")
+// }
 
 #[cfg(test)]
 mod tests {
@@ -73,13 +115,13 @@ mod tests {
         assert_eq!(bar.to_string(), "C - G");
     }
 
-    #[test]
-    fn displa_bars() {
-        let bar1 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
-        let bar2 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
-        let bars = [bar1, bar2];
+    // #[test]
+    // fn displa_bars() {
+    //     let bar1 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
+    //     let bar2 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
+    //     let bars = [bar1, bar2];
 
-        let s = show(bars.into_iter());
-        assert_eq!(s, "| C - G | C - G |")
-    }
+    //     let s = show(bars.into_iter());
+    //     assert_eq!(s, "| C - G | C - G |")
+    // }
 }

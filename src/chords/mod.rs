@@ -109,6 +109,10 @@ impl Chords {
         chords.into_iter().filter(predicate)
     }
 
+    pub fn all_chords(root: Note) -> impl Iterator<Item = Self> {
+        Self::find(root, |_| true)
+    }
+
     pub fn find_contain_notes<N>(root: Note, notes: N) -> impl Iterator<Item = Self>
     where
         N: Iterator<Item = Note>,
