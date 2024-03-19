@@ -4,9 +4,9 @@ fn main() {
     println!();
     println!("Exercise 3: | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |");
 
-    let cmaj = C.major();
-    let gmaj = G.major();
-    let fmaj = F.major();
+    let cmaj = C.maj();
+    let gmaj = G.maj();
+    let fmaj = F.maj();
 
     // bar 1
     for _ in 0..4 {

@@ -1,174 +1,208 @@
+use crate::{Note, NoteStepperIterator, Tone};
+use std::fmt::{Display, LowerHex, UpperHex};
+
 mod diminished;
-mod diminished7;
-mod dominant7;
-mod dominant9;
+mod dominant;
 mod major;
-mod major7;
-mod major9;
 mod minor;
-mod minor7;
-mod minor7b5;
-mod minor9;
 
 pub use diminished::*;
-pub use diminished7::*;
-pub use dominant7::*;
-pub use dominant9::*;
+pub use dominant::*;
 pub use major::*;
-pub use major7::*;
-pub use major9::*;
 pub use minor::*;
-pub use minor7::*;
-pub use minor7b5::*;
-pub use minor9::*;
 
-use crate::{Note, NoteStepperIterator, Tone, OCTAVE};
-use std::fmt::{Debug, Display, LowerHex, UpperHex};
-
-/// The chord behavior. The chord always has to be
-/// convertable to a sequence of [`Note`] notes.
-pub trait Chord: IntoIterator<Item = Note> {
-    /// Returns the root of the chord
-    fn root(&self) -> &Note;
-
-    /// Returns the number of notes in the chord
-    fn len(&self) -> usize;
-
-    /// Determines if the chord is empty.
-    fn is_empty(&self) -> bool;
-
-    /// Moves the chord one octave up.
-    fn up_one_octave(self) -> Self;
-
-    /// Move the chord one octave down.
-    fn down_one_octave(self) -> Self;
+pub trait Chord {
+    fn root(&self) -> Note;
+    fn notes(&self) -> impl Iterator<Item = &Note>;
+    fn as_steps(&self) -> impl Iterator<Item = Tone>;
 }
 
-pub(crate) struct InnerChord(Vec<Note>);
+pub enum Chords {
+    Major(&'static str, Vec<Note>),
+    Minor(&'static str, Vec<Note>),
+    Dominant(&'static str, Vec<Note>),
+    Diminished(&'static str, Vec<Note>),
+}
 
-impl InnerChord {
-    fn new(n: impl Iterator<Item = Note>) -> Self {
-        Self(n.collect())
+impl Chords {
+    fn major<N>(name: &'static str, notes: N) -> Self
+    where
+        N: Iterator<Item = Note>,
+    {
+        Self::Major(name, notes.map(|n| n.base()).collect())
     }
 
-    pub(crate) fn with_steps<T>(root: Note, steps: impl Iterator<Item = T>) -> Self
+    fn major_with_steps<S, T>(name: &'static str, root: Note, steps: S) -> Self
     where
+        S: Iterator<Item = T>,
         Tone: From<T>,
     {
         let notes = NoteStepperIterator::new(root, steps.into_iter());
-        Self::new(notes)
+        Self::major(name, notes)
     }
 
-    fn notes_debug(&self) -> String {
-        self.0
-            .iter()
-            .map(|n| format!("{n:?}"))
-            .collect::<Vec<_>>()
-            .join(", ")
+    fn minor<N>(name: &'static str, notes: N) -> Self
+    where
+        N: Iterator<Item = Note>,
+    {
+        Self::Minor(name, notes.map(|n| n.base()).collect())
     }
+
+    fn minor_with_steps<S, T>(name: &'static str, root: Note, steps: S) -> Self
+    where
+        S: Iterator<Item = T>,
+        Tone: From<T>,
+    {
+        let notes = NoteStepperIterator::new(root, steps.into_iter());
+        Self::minor(name, notes)
+    }
+
+    fn dominant<N>(name: &'static str, notes: N) -> Self
+    where
+        N: Iterator<Item = Note>,
+    {
+        Self::Dominant(name, notes.map(|n| n.base()).collect())
+    }
+
+    fn dominant_with_steps<S, T>(name: &'static str, root: Note, steps: S) -> Self
+    where
+        S: Iterator<Item = T>,
+        Tone: From<T>,
+    {
+        let notes = NoteStepperIterator::new(root, steps.into_iter());
+        Self::dominant(name, notes)
+    }
+
+    fn diminished<N>(name: &'static str, notes: N) -> Self
+    where
+        N: Iterator<Item = Note>,
+    {
+        Self::Diminished(name, notes.map(|n| n.base()).collect())
+    }
+
+    pub fn diminished_with_steps<S, T>(name: &'static str, root: Note, steps: S) -> Self
+    where
+        S: Iterator<Item = T>,
+        Tone: From<T>,
+    {
+        let notes = NoteStepperIterator::new(root, steps.into_iter());
+        Self::diminished(name, notes)
+    }
+
+    pub fn contains_notes<N>(&self, others: &mut N) -> bool
+    where
+        N: Iterator<Item = Note>,
+    {
+        let ns = self.inner_notes();
+        others.into_iter().all(|note| ns.contains(&note))
+    }
+
+    pub fn find<P>(root: Note, predicate: P) -> impl Iterator<Item = Self>
+    where
+        P: FnMut(&Self) -> bool,
+    {
+        let mut chords = major_chords(root).collect::<Vec<_>>();
+        chords.extend(minor_chords(root).into_iter());
+        chords.extend(dominant_chords(root).into_iter());
+        chords.extend(diminished_chords(root));
+
+        chords.into_iter().filter(predicate)
+    }
+
+    pub fn find_contain_notes<N>(root: Note, notes: N) -> impl Iterator<Item = Self>
+    where
+        N: Iterator<Item = Note>,
+    {
+        let notes = notes.collect::<Vec<_>>();
+
+        Self::find(root, move |chord| {
+            chord.contains_notes(&mut notes.clone().into_iter())
+        })
+    }
+
+    fn inner_notes(&self) -> &Vec<Note> {
+        match self {
+            Chords::Major(_, notes) => notes,
+            Chords::Minor(_, notes) => notes,
+            Chords::Dominant(_, notes) => notes,
+            Chords::Diminished(_, notes) => notes,
+        }
+    }
+
+    fn inner_name(&self) -> &'static str {
+        match self {
+            Chords::Major(name, _) => name,
+            Chords::Minor(name, _) => name,
+            Chords::Dominant(name, _) => name,
+            Chords::Diminished(name, _) => name,
+        }
+    }
+
+    const SEPARATOR: &'static str = ", ";
 
     fn notes_upper_hex(&self) -> String {
-        self.0
+        self.inner_notes()
             .iter()
             .map(|n| format!("{n:X}"))
             .collect::<Vec<_>>()
-            .join(", ")
+            .join(Self::SEPARATOR)
     }
 
     fn notes_lower_hex(&self) -> String {
-        self.0
+        self.inner_notes()
             .iter()
             .map(|n| format!("{n:x}"))
             .collect::<Vec<_>>()
-            .join(", ")
+            .join(Self::SEPARATOR)
     }
 }
 
-impl Display for InnerChord {
+impl Chord for Chords {
+    fn root(&self) -> Note {
+        self.inner_notes()[0]
+    }
+
+    fn notes(&self) -> impl Iterator<Item = &Note> {
+        self.inner_notes().iter()
+    }
+
+    fn as_steps(&self) -> impl Iterator<Item = Tone> {
+        self.inner_notes()
+            .as_slice()
+            .windows(2)
+            .map(|notes| notes[0] - notes[1])
+    }
+}
+
+impl Display for Chords {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.root())
+        write!(f, "{}{}", self.root(), self.inner_name())
     }
 }
 
-impl Debug for InnerChord {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let notes = self.notes_debug();
-        write!(f, "[{notes}]")
-    }
-}
-
-impl UpperHex for InnerChord {
+impl UpperHex for Chords {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let notes = self.notes_upper_hex();
-        write!(f, "[{notes}]")
+        write!(f, "{self} [{notes}]")
     }
 }
 
-impl LowerHex for InnerChord {
+impl LowerHex for Chords {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let notes = self.notes_lower_hex();
-        write!(f, "[{notes}]")
-    }
-}
-
-impl Chord for InnerChord {
-    fn root(&self) -> &Note {
-        &self.0[0]
-    }
-
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Moves the chord one octave up.
-    fn up_one_octave(self) -> Self {
-        let notes = self.into_iter().map(|n| n + OCTAVE);
-        Self::new(notes)
-    }
-
-    fn down_one_octave(self) -> Self {
-        let notes = self.into_iter().map(|n| n - OCTAVE);
-        Self::new(notes)
-    }
-}
-
-impl IntoIterator for InnerChord {
-    type Item = Note;
-
-    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
+        write!(f, "{self} [{notes}]")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{A, C, D, E, F, G};
-
     use super::*;
+    use crate::{C, E, G};
 
     #[test]
-    fn move_up() {
-        let chord1 = InnerChord::new([C, D, E, F, G, A].into_iter());
-        let chord2 = InnerChord::new([C, D, E, F, G, A].into_iter()).up_one_octave();
-
-        let notes1 = chord1.into_iter().map(|n| n.base()).collect::<Vec<_>>();
-        let notes2 = chord2.into_iter().map(|n| n.base()).collect::<Vec<_>>();
-        assert_eq!(notes1, notes2)
-    }
-
-    #[test]
-    fn move_down() {
-        let chord1 = InnerChord::new([C, D, E, F, G, A].into_iter());
-        let chord2 = InnerChord::new([C, D, E, F, G, A].into_iter()).down_one_octave();
-
-        let notes1 = chord1.into_iter().map(|n| n.base()).collect::<Vec<_>>();
-        let notes2 = chord2.into_iter().map(|n| n.base()).collect::<Vec<_>>();
-        assert_eq!(notes1, notes2)
+    fn find_notes() {
+        let notes = [C, E, G];
+        let res = Chords::find_contain_notes(C, notes.into_iter()).collect::<Vec<Chords>>();
+        assert!(!res.is_empty());
     }
 }

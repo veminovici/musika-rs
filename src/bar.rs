@@ -1,19 +1,12 @@
+use crate::chords::Chords;
 use std::fmt::Display;
 
-use crate::{chords::Chord, Note};
-
-pub enum BarElement<C>
-where
-    C: Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+pub enum BarElement {
     Silence(u8),
-    Chord(C, u8),
+    Chord(Chords, u8),
 }
 
-impl<C> Display for BarElement<C>
-where
-    C: Display + Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+impl Display for BarElement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             BarElement::Silence(_) => write!(f, "_"),
@@ -22,19 +15,14 @@ where
     }
 }
 
-pub struct Bar<C>(Vec<BarElement<C>>)
-where
-    C: Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>;
+pub struct Bar(Vec<BarElement>);
 
-impl<C> Bar<C>
-where
-    C: Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+impl Bar {
     pub fn new() -> Self {
         Self(vec![])
     }
 
-    pub fn with_chord(self, chord: C, fraction: u8) -> Self {
+    pub fn with_chord(self, chord: Chords, fraction: u8) -> Self {
         let mut items = self.0;
         items.push(BarElement::Chord(chord, fraction));
         Self(items)
@@ -47,19 +35,13 @@ where
     }
 }
 
-impl<C> Default for Bar<C>
-where
-    C: Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+impl Default for Bar {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<C> Display for Bar<C>
-where
-    C: Display + Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+impl Display for Bar {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = self
             .0
@@ -71,10 +53,7 @@ where
     }
 }
 
-pub fn show<C>(bars: impl Iterator<Item = Bar<C>>) -> String
-where
-    C: Display + Chord<IntoIter = <Vec<Note> as IntoIterator>::IntoIter>,
-{
+pub fn show(bars: impl Iterator<Item = Bar>) -> String {
     let s = bars
         .map(|b| b.to_string())
         .collect::<Vec<String>>()
@@ -90,14 +69,14 @@ mod tests {
 
     #[test]
     fn display() {
-        let bar = Bar::new().with_chord(C.major(), 2).with_chord(G.major(), 2);
+        let bar = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
         assert_eq!(bar.to_string(), "C - G");
     }
 
     #[test]
     fn displa_bars() {
-        let bar1 = Bar::new().with_chord(C.major(), 2).with_chord(G.major(), 2);
-        let bar2 = Bar::new().with_chord(C.major(), 2).with_chord(G.major(), 2);
+        let bar1 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
+        let bar2 = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
         let bars = [bar1, bar2];
 
         let s = show(bars.into_iter());

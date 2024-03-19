@@ -1,107 +1,67 @@
-use super::{Chord, InnerChord};
+use super::Chords;
 use crate::Note;
-use std::fmt::{Debug, Display, LowerHex, UpperHex};
 
-/// Implements the **major** chord.
-/// [C chord](https://www.pianochord.org/c-major.html) (C - E - G)
-pub struct Major(InnerChord);
-
-impl Major {
-    pub fn new(root: Note) -> Self {
-        let steps = [4, 3];
-        Self(InnerChord::with_steps(root, steps.into_iter()))
-    }
+pub fn maj(root: Note) -> Chords {
+    let steps = [4, 3];
+    Chords::major_with_steps("", root, steps.into_iter())
 }
 
-impl From<Note> for Major {
-    fn from(root: Note) -> Self {
-        Major::new(root)
-    }
+pub fn maj7(root: Note) -> Chords {
+    let steps = [4, 3, 4];
+    Chords::major_with_steps("maj7", root, steps.into_iter())
 }
 
-impl Display for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.root())
-    }
+pub fn maj9(root: Note) -> Chords {
+    let steps = [4, 3, 4, 3];
+    Chords::major_with_steps("maj9", root, steps.into_iter())
 }
 
-impl Debug for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Chord: Maj, {:?}, {:?}", self.root(), self.0)
-    }
+pub fn maj11(root: Note) -> Chords {
+    let steps = [4, 3, 4, 3, 3];
+    Chords::major_with_steps("maj11", root, steps.into_iter())
 }
 
-impl UpperHex for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:X} {:X}", self.root(), self.0)
-    }
+pub fn maj13(root: Note) -> Chords {
+    let steps = [4, 3, 4, 3, 3, 4];
+    Chords::major_with_steps("maj13", root, steps.into_iter())
 }
 
-impl LowerHex for Major {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:x} {:x}", self.root(), self.0)
-    }
-}
-
-impl IntoIterator for Major {
-    type Item = Note;
-
-    type IntoIter = <Vec<Note> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl Chord for Major {
-    fn root(&self) -> &Note {
-        self.0.root()
-    }
-
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    fn up_one_octave(self) -> Self {
-        Self(self.0.up_one_octave())
-    }
-
-    fn down_one_octave(self) -> Self {
-        Self(self.0.down_one_octave())
-    }
+pub fn major_chords(root: Note) -> impl Iterator<Item = Chords> {
+    [maj(root), maj7(root), maj9(root), maj11(root), maj13(root)].into_iter()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{C, E, G};
-
     use super::*;
+    use crate::C;
 
     #[test]
-    fn new() {
-        let chord = Major::new(C);
-
-        assert_eq!(chord.root(), &C);
-        assert_eq!(chord.len(), 3);
-        assert!(!chord.is_empty());
-
-        let notes = chord.into_iter().collect::<Vec<_>>();
-        assert_eq!(notes, vec![C, E, G]);
+    fn test_maj() {
+        let chord = maj(C);
+        assert_eq!(format!("{chord:X}"), "C [C, E, G]")
     }
 
     #[test]
-    fn show() {
-        let chord = Major::new(C);
-        assert_eq!(format!("{chord}"), "C");
-        assert_eq!(
-            format!("{chord:?}"),
-            "Chord: Maj, C4:C:0, [C4:C:0, C4:E:4, C4:G:7]"
-        );
-        assert_eq!(format!("{chord:X}"), "C [C, E, G]");
-        assert_eq!(format!("{chord:x}"), "C [C, E, G]");
+    fn test_maj7() {
+        let chord = maj7(C);
+        assert_eq!(format!("{chord:X}"), "Cmaj7 [C, E, G, B]")
+    }
+
+    #[test]
+    fn test_maj9() {
+        let chord = maj9(C);
+        assert_eq!(format!("{chord:X}"), "Cmaj9 [C, E, G, B, D]")
+    }
+
+    #[test]
+    fn test_maj11() {
+        let chord = maj11(C);
+        assert_eq!(format!("{chord:X}"), "Cmaj11 [C, E, G, B, D, F]")
+    }
+
+    #[test]
+    fn test_maj13() {
+        let chord = maj13(C);
+        assert_eq!(format!("{chord:X}"), "Cmaj13 [C, E, G, B, D, F, A]")
     }
 }

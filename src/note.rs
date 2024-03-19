@@ -3,7 +3,7 @@ use std::{
     ops::{Add, Sub},
 };
 
-use crate::chords;
+use crate::chords::{self, Chords};
 
 use super::{Tone, OCTAVE};
 
@@ -51,22 +51,36 @@ impl Note {
     // Functions which build chords
     //
 
-    pub fn diminished(self) -> chords::Diminished {
-        chords::Diminished::from(self)
+    //
+    // Diminished chords
+    //
+
+    /// Builds a **dim** chord with the root in the current note.
+    pub fn dim(self) -> chords::Chords {
+        chords::dim(self)
     }
 
-    /// Builds a diminished7 chord with the root in the current note.
+    /// Builds a **dim7** chord with the root in the current note.
     ///
     /// # Example
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.diminished7();
+    /// let chord = C.dim7();
     /// println!("{:X}", chord);
     /// ```
-    pub fn diminished7(self) -> chords::Diminished7 {
-        chords::Diminished7::from(self)
+    pub fn dim7(self) -> chords::Chords {
+        chords::dim7(self)
     }
+
+    /// Return all the diminished chords for the current note.
+    pub fn dimished_chords(self) -> impl Iterator<Item = chords::Chords> {
+        chords::diminished_chords(self)
+    }
+
+    //
+    // Dominant chords
+    //
 
     /// Builds a dominant7 choard with the root in the current note.
     ///
@@ -74,15 +88,35 @@ impl Note {
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.dominant7();
+    /// let chord = C.dom7();
     /// println!("{:X}", chord);
     /// ```
-    pub fn dominant7(self) -> chords::Dominant7 {
-        chords::Dominant7::from(self)
+    pub fn dom7(self) -> chords::Chords {
+        chords::dom7(self)
     }
 
-    pub fn dominant9(self) -> chords::Dominant9 {
-        chords::Dominant9::from(self)
+    pub fn dom7b5(self) -> chords::Chords {
+        chords::dom7b5(self)
+    }
+
+    pub fn dom7s5(self) -> chords::Chords {
+        chords::dom7s5(self)
+    }
+
+    pub fn dom9(self) -> chords::Chords {
+        chords::dom9(self)
+    }
+
+    pub fn dom11(self) -> chords::Chords {
+        chords::dom11(self)
+    }
+
+    pub fn dom13(self) -> chords::Chords {
+        chords::dom13(self)
+    }
+
+    pub fn dominant_chords(self) -> impl Iterator<Item = Chords> {
+        chords::dominant_chords(self)
     }
 
     /// Builds a major chord with the root in the current note.
@@ -91,11 +125,11 @@ impl Note {
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.major();
+    /// let chord = C.maj();
     /// println!("{:X}", chord);
     /// ```
-    pub fn major(self) -> chords::Major {
-        chords::Major::from(self)
+    pub fn maj(self) -> chords::Chords {
+        chords::maj(self)
     }
 
     /// Builds a major7 chord with the root in the current note.
@@ -104,27 +138,40 @@ impl Note {
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.major7();
+    /// let chord = C.maj7();
     /// println!("{:X}", chord);
     /// ```
-    pub fn major7(self) -> chords::Major7 {
-        chords::Major7::from(self)
+    pub fn maj7(self) -> chords::Chords {
+        chords::maj7(self)
     }
 
-    pub fn major9(self) -> chords::Major9 {
-        chords::Major9::from(self)
+    pub fn maj9(self) -> chords::Chords {
+        chords::maj9(self)
     }
+
+    pub fn maj11(self) -> chords::Chords {
+        chords::maj11(self)
+    }
+
+    pub fn maj13(self) -> chords::Chords {
+        chords::maj13(self)
+    }
+
+    pub fn major_chords(self) -> impl Iterator<Item = Chords> {
+        chords::major_chords(self)
+    }
+
     /// Builds a minor chord with the root in the current note.
     ///
     /// # Example
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.minor();
+    /// let chord = C.min();
     /// println!("{:X}", chord);
     /// ```
-    pub fn minor(self) -> chords::Minor {
-        chords::Minor::from(self)
+    pub fn min(self) -> chords::Chords {
+        chords::min(self)
     }
 
     /// Builds a minor7 chord with the root in the current note.
@@ -133,28 +180,31 @@ impl Note {
     /// ```
     /// use musika_rs::*;
     ///
-    /// let chord = C.minor7();
+    /// let chord = C.min7();
     /// println!("{:X}", chord);
     /// ```
-    pub fn minor7(self) -> chords::Minor7 {
-        chords::Minor7::from(self)
+    pub fn min7(self) -> chords::Chords {
+        chords::min7(self)
     }
 
-    pub fn minor9(self) -> chords::Minor9 {
-        chords::Minor9::from(self)
+    pub fn min7b5(self) -> chords::Chords {
+        chords::min7b5(self)
     }
 
-    /// Builds a minor7b5 chord with the root in the current note.
-    ///
-    /// # Example
-    /// ```
-    /// use musika_rs::*;
-    ///
-    /// let chord = C.minor7b5();
-    /// println!("{:X}", chord);
-    /// ```
-    pub fn minor7b5(self) -> chords::Minor7b5 {
-        chords::Minor7b5::from(self)
+    pub fn min9(self) -> chords::Chords {
+        chords::min9(self)
+    }
+
+    pub fn min11(self) -> chords::Chords {
+        chords::min11(self)
+    }
+
+    pub fn min13(self) -> chords::Chords {
+        chords::min13(self)
+    }
+
+    pub fn minor_chords(self) -> impl Iterator<Item = Chords> {
+        chords::minor_chords(self)
     }
 }
 

@@ -8,24 +8,23 @@
 //!     C, C_SHARP,
 //! };
 //!
-//! let chord = chords::Major::from(C);
-//! println!("Major C: {chord:X}");
+//! let chord = C.maj();
+//! println!("C: {chord:X}");
 //!
-//! let chord = chords::Major7::from(C);
-//! println!("Major7 C: {chord:X}");
+//! let chord = C.maj7();
+//! println!("Cmaj7: {chord:X}");
 //!
-//! let chord = chords::Major7::from(C_SHARP);
-//! println!("Major7 C#: {chord:X}");
+//! let chord = C.dom7();
+//! println!("C7: {chord:X}");
 //!
-//! let chord = chords::Dominant7::from(C);
-//! println!("Dom7 C: {chord:X}");
+//! let chord = C.maj13();
+//! println!("Cmaj13: {chord:X}");
 //! ```
 
 mod bar;
 pub mod chords;
 mod note;
 mod tone;
-pub mod xchords;
 
 pub use bar::*;
 pub use note::*;

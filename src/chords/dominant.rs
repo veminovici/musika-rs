@@ -1,34 +1,46 @@
-use super::XChords;
+use super::Chords;
 use crate::Note;
 
-pub fn dom7(root: Note) -> XChords {
+pub fn dom7(root: Note) -> Chords {
     let steps = [4, 3, 3];
-    XChords::dominant_with_steps("7", root, steps.into_iter())
+    Chords::dominant_with_steps("7", root, steps.into_iter())
 }
 
-pub fn dom7b5(root: Note) -> XChords {
+pub fn dom7b5(root: Note) -> Chords {
     let steps = [4, 2, 4];
-    XChords::dominant_with_steps("7b5", root, steps.into_iter())
+    Chords::dominant_with_steps("7b5", root, steps.into_iter())
 }
 
-pub fn dom7s5(root: Note) -> XChords {
+pub fn dom7s5(root: Note) -> Chords {
     let steps = [4, 4, 2];
-    XChords::dominant_with_steps("7#5", root, steps.into_iter())
+    Chords::dominant_with_steps("7#5", root, steps.into_iter())
 }
 
-pub fn dom9(root: Note) -> XChords {
+pub fn dom9(root: Note) -> Chords {
     let steps = [4, 3, 3, 4];
-    XChords::dominant_with_steps("9", root, steps.into_iter())
+    Chords::dominant_with_steps("9", root, steps.into_iter())
 }
 
-pub fn dom11(root: Note) -> XChords {
+pub fn dom11(root: Note) -> Chords {
     let steps = [4, 3, 3, 4, 3];
-    XChords::dominant_with_steps("11", root, steps.into_iter())
+    Chords::dominant_with_steps("11", root, steps.into_iter())
 }
 
-pub fn dom13(root: Note) -> XChords {
+pub fn dom13(root: Note) -> Chords {
     let steps = [4, 3, 3, 4, 3, 4];
-    XChords::dominant_with_steps("13", root, steps.into_iter())
+    Chords::dominant_with_steps("13", root, steps.into_iter())
+}
+
+pub fn dominant_chords(root: Note) -> impl Iterator<Item = Chords> {
+    [
+        dom7(root),
+        dom7b5(root),
+        dom7s5(root),
+        dom9(root),
+        dom11(root),
+        dom13(root),
+    ]
+    .into_iter()
 }
 
 #[cfg(test)]

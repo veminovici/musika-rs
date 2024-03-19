@@ -11,22 +11,19 @@
 A Rust crate for musical basic elements.
 
 ```rust
-use musika_rs::{
-    chords::{self},
-    C, C_SHARP,
-};
+use musika_rs::C;
 
-let chord = chords::Major::from(C);
-println!("Major C: {chord:X}");
+let chord = C.maj();
+println!("{chord:X}");
 
-let chord = chords::Major7::from(C);
-println!("Major7 C: {chord:X}");
+let chord = C.maj7();
+println!("{chord:X}");
 
-let chord = chords::Major7::from(C_SHARP);
-println!("Major7 C#: {chord:X}");
+let chord = C.min();
+println!("{chord:X}");
 
-let chord = chords::Dominant7::from(C);
-println!("Dom7 C: {chord:X}");
+let chord = C.dom7();
+println!("{chord:X}");
 ```
 
 You can find more examples in the [examples][examples_folder] folder.
@@ -44,20 +41,6 @@ The create allows you to build the following chords:
 
 You can find all the chords in the [chords][chords_folder] folder.
 
-```rust
-use musika_rs::*
-
-let cmaj = C.major();
-println!("{:X}", cmaj);
-
-let amin = A.minor();
-println!("{:X}", amin);
-
-let cmaj7 = C.major7();
-println!("{:X}", cmaj7);
-
-```
-
 ## Piano Exercises
 You can find all piano exercises implemented in the exercises examples. You can see the practices by running:
 ```bsh
@@ -65,11 +48,13 @@ cargo run --example exercise1
 cargo run --example exercise2
 cargo run --example exercise3
 cargo run --example exercise4
+cargo run --example exercise5
 ```
 
 - [Exercise 1][exercise1_file] | C - Am | F - G |
 - [Exercise 2][exercise2_file] | C - G | Am - F | C - G | F - Em - Dm - C |
 - [Exercise 3][exercise3_file] | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |
+- [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
 - [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
 
 ## Resources
@@ -103,3 +88,4 @@ cargo run --example exercise4
 [exercise2_file]: ./examples/exercise2.rs
 [exercise3_file]: ./examples/exercise3.rs
 [exercise4_file]: ./examples/exercise4.rs
+[exercise5_file]: ./examples/exercise5.rs
