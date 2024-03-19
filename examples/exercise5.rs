@@ -72,10 +72,10 @@ fn key_f_major() {
 /// | Dm9 Dm9 | G13 G13 | Dm9 Dm9 | G13 G13 |
 /// | Cmaj9 Cmaj9 | Fmaj13 Fmaj13 | Cmaj9 Cmaj9 | A7b9b13 |
 fn main() {
-    println!("Exercise 5: | Dm9x2 | G13x2 | Cmaj9x2 | Fmaj13X2 | A7 | Dm | G | C |");
+    println!("Exercise 5:");
 
-    println!("Key: C");
+    println!("Key: C major");
     key_c_major();
-    println!("Key: F");
+    println!("Key: F major");
     key_f_major();
 }
