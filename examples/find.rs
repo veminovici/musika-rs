@@ -1,4 +1,4 @@
-use musika_rs::{chords::Chords, A, A_SHARP, C, C_SHARP, D, E, F, G};
+use musika_rs::{chords::Chords, A, C, E, G};
 
 fn main() {
     // let notes = [A, G, A_SHARP, C_SHARP, F];
