@@ -81,6 +81,10 @@ impl Note {
         chords::Dominant7::from(self)
     }
 
+    pub fn dominant9(self) -> chords::Dominant9 {
+        chords::Dominant9::from(self)
+    }
+
     /// Builds a major chord with the root in the current note.
     ///
     /// # Example
@@ -107,6 +111,9 @@ impl Note {
         chords::Major7::from(self)
     }
 
+    pub fn major9(self) -> chords::Major9 {
+        chords::Major9::from(self)
+    }
     /// Builds a minor chord with the root in the current note.
     ///
     /// # Example
@@ -131,6 +138,10 @@ impl Note {
     /// ```
     pub fn minor7(self) -> chords::Minor7 {
         chords::Minor7::from(self)
+    }
+
+    pub fn minor9(self) -> chords::Minor9 {
+        chords::Minor9::from(self)
     }
 
     /// Builds a minor7b5 chord with the root in the current note.
@@ -234,6 +245,15 @@ impl Sub<Tone> for Note {
     fn sub(self, tone: Tone) -> Self::Output {
         let note = self.0 - u8::from(tone) as i8;
         note.into()
+    }
+}
+
+impl Sub<Note> for Note {
+    type Output = Tone;
+
+    fn sub(self, other: Note) -> Self::Output {
+        let tone = (self.0 - other.0).abs() as u8;
+        tone.into()
     }
 }
 
@@ -399,7 +419,7 @@ mod tests {
     }
 
     #[test]
-    fn sub() {
+    fn sub_tone() {
         assert_eq!(G - SEMI_TONE, F_SHARP);
         assert_eq!(G - TONE, F);
 
@@ -414,6 +434,11 @@ mod tests {
         let note = A - SEMI_TONE;
         assert_eq!(note.octave(), 3);
         assert_eq!(note.base(), G_SHARP);
+    }
+
+    #[test]
+    fn sub_note() {
+        assert_eq!(C - B, SEMI_TONE);
     }
 }
 

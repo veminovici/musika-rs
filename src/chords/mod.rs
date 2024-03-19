@@ -1,20 +1,26 @@
 mod diminished;
 mod diminished7;
 mod dominant7;
+mod dominant9;
 mod major;
 mod major7;
+mod major9;
 mod minor;
 mod minor7;
 mod minor7b5;
+mod minor9;
 
 pub use diminished::*;
 pub use diminished7::*;
 pub use dominant7::*;
+pub use dominant9::*;
 pub use major::*;
 pub use major7::*;
+pub use major9::*;
 pub use minor::*;
 pub use minor7::*;
 pub use minor7b5::*;
+pub use minor9::*;
 
 use crate::{Note, NoteStepperIterator, Tone, OCTAVE};
 use std::fmt::{Debug, Display, LowerHex, UpperHex};

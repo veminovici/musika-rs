@@ -1,0 +1,16 @@
+use musika_rs::*;
+
+/// [Resource](https://www.youtube.com/watch?v=WrLFCznbNMw)
+fn main() {
+    println!();
+    println!("Exercise 5: | Dm9x2 | G13x2 | Cmaj9x2 | Fmaj13X2 | A7 | Dm | G | C |");
+
+    println!("{:X}", D.minor9()); // D - F - A - C - E
+    println!("{:X}", D.minor9()); // D - F - A - C - E
+    println!("{:X}", G.dominant9()); // G - F - A - B - E
+    println!("{:X}", C.major9()); // C - E - G - B - D
+                                  // TODO: Find the Fmaj13 chord (4:48)
+    println!("{:X}", F.major9()); // F - E - G - A - D
+                                  // TODO: Find the A7 b5 b13
+    println!("{:X}", A.dominant9()); // G - F - A - B - E
+}

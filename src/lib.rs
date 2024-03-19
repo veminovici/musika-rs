@@ -25,6 +25,7 @@ mod bar;
 pub mod chords;
 mod note;
 mod tone;
+pub mod xchords;
 
 pub use bar::*;
 pub use note::*;
