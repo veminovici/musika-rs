@@ -24,6 +24,7 @@
 mod bar;
 pub mod chords;
 mod note;
+pub mod scales;
 mod tone;
 
 pub use bar::*;
