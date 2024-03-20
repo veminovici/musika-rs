@@ -38,10 +38,12 @@
 
 mod bar;
 pub mod chords;
+mod interval;
 mod note;
 pub mod scales;
 mod tone;
 
 pub use bar::*;
+pub use interval::*;
 pub use note::*;
 pub use tone::*;

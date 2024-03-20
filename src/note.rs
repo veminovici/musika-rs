@@ -310,7 +310,7 @@ impl Sub<Note> for Note {
     type Output = Tone;
 
     fn sub(self, other: Note) -> Self::Output {
-        let tone = (self.0 - other.0).abs() as u8;
+        let tone = (self.0 - other.0).unsigned_abs();
         tone.into()
     }
 }

@@ -102,8 +102,8 @@ impl Chords {
         P: FnMut(&Self) -> bool,
     {
         let mut chords = major_chords(root).collect::<Vec<_>>();
-        chords.extend(minor_chords(root).into_iter());
-        chords.extend(dominant_chords(root).into_iter());
+        chords.extend(minor_chords(root));
+        chords.extend(dominant_chords(root));
         chords.extend(diminished_chords(root));
 
         chords.into_iter().filter(predicate)
