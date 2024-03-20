@@ -1,7 +1,4 @@
-use musika_rs::{
-    chords::{min7, Chords},
-    Bar, C, D, G,
-};
+use musika_rs::{Bar, C, D, G};
 
 fn main() {
     let dm7 = D.min7();
