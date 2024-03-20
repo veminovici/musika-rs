@@ -20,8 +20,18 @@ let scale = scales::major(C);
 println!("{scale:X}");
 ```
 
-You can find more examples in the [examples][examples_folder] folder. To run an example:
+## Build and Run
+To build the crate
+```bsh
+cargo build
+```
 
+To build and view the internal documentstion:
+```bsh
+cargo doc --open
+```
+
+You can find more examples in the [examples][examples_folder] folder. To run an example:
 ```bsh
 cargo run --example find
 ```
