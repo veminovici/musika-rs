@@ -91,6 +91,10 @@ cargo run --example exercise5
 - [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
 - [Exercise 5][exercise5_file] | Dm9 Dm9 | G13 G13 | Dm9 Dm9 | G13 G13 |
 
+## Jazz Exercises
+
+- [II - V - I Chord Progression][jazz_251_file]
+
 ## Resources
 - [Piano Chords][piano_chords_url]
 - [5 Jazz Chords that Actually Sound Great][5_jazz_chords_url]
@@ -135,3 +139,4 @@ cargo run --example exercise5
 [5_jazz_chords_url]: https://www.youtube.com/watch?v=WrLFCznbNMw
 [12_minor_scales_url]: https://www.damvibes.com/music-theory/minor-scales/
 [12_major_scales_url]: https://www.damvibes.com/music-theory/major-scales/
+[jazz_251_file]: ./examples/jazz_251.rs

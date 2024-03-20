@@ -36,6 +36,8 @@ impl LowerHex for BarElement {
 pub struct Bar(Vec<BarElement>);
 
 impl Bar {
+    const SEPARATOR: &'static str = " ";
+
     pub fn new() -> Self {
         Self(vec![])
     }
@@ -66,7 +68,7 @@ impl Display for Bar {
             .iter()
             .map(|e| format!("{e}"))
             .collect::<Vec<String>>()
-            .join(" - ");
+            .join(Self::SEPARATOR);
         write!(f, "{s}")
     }
 }
@@ -78,7 +80,7 @@ impl UpperHex for Bar {
             .iter()
             .map(|e| format!("{e:X}"))
             .collect::<Vec<String>>()
-            .join(" - ");
+            .join(Self::SEPARATOR);
         write!(f, "{s}")
     }
 }
@@ -90,7 +92,7 @@ impl LowerHex for Bar {
             .iter()
             .map(|e| format!("{e:x}"))
             .collect::<Vec<String>>()
-            .join(" - ");
+            .join(Self::SEPARATOR);
         write!(f, "{s}")
     }
 }
@@ -112,7 +114,7 @@ mod tests {
     #[test]
     fn display() {
         let bar = Bar::new().with_chord(C.maj(), 2).with_chord(G.maj(), 2);
-        assert_eq!(bar.to_string(), "C - G");
+        assert_eq!(bar.to_string(), "C G");
     }
 
     // #[test]
