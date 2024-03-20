@@ -1,9 +1,10 @@
-use crate::chords::Chords;
+use crate::{chords::Chords, Note};
 use std::fmt::{Display, LowerHex, UpperHex};
 
 pub enum BarElement {
     Silence(u8),
     Chord(Chords, u8),
+    Note(Note, u8),
 }
 
 impl Display for BarElement {
@@ -11,6 +12,7 @@ impl Display for BarElement {
         match self {
             BarElement::Silence(_) => write!(f, "_"),
             BarElement::Chord(chord, _) => write!(f, "{chord}"),
+            BarElement::Note(note, _) => write!(f, "{note}"),
         }
     }
 }
@@ -20,6 +22,7 @@ impl UpperHex for BarElement {
         match self {
             BarElement::Silence(_) => write!(f, "_"),
             BarElement::Chord(chord, _) => write!(f, "{chord:X}"),
+            BarElement::Note(note, _) => write!(f, "{note:X}"),
         }
     }
 }
@@ -29,6 +32,7 @@ impl LowerHex for BarElement {
         match self {
             BarElement::Silence(_) => write!(f, "_"),
             BarElement::Chord(chord, _) => write!(f, "{chord:x}"),
+            BarElement::Note(note, _) => write!(f, "{note:x}"),
         }
     }
 }
@@ -45,6 +49,12 @@ impl Bar {
     pub fn with_chord(self, chord: Chords, fraction: u8) -> Self {
         let mut items = self.0;
         items.push(BarElement::Chord(chord, fraction));
+        Self(items)
+    }
+
+    pub fn with_note(self, note: Note, fraction: u8) -> Self {
+        let mut items = self.0;
+        items.push(BarElement::Note(note, fraction));
         Self(items)
     }
 
