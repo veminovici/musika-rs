@@ -93,6 +93,8 @@ cargo run --example exercise5
 ## Resources
 - [Piano Chords][piano_chords_url]
 - [5 Jazz Chords that Actually Sound Great][5_jazz_chords_url]
+- [The 12 major scales Formula & Pattern][12_major_scales_url]
+- [The 12 minor scales Formula & Pattern][12_minor_scales_url]
 
 ## About
 > Code designed and written on the beautiful island of [**Saaremaa**][estonia_url], Estonia.
@@ -128,3 +130,5 @@ cargo run --example exercise5
 [scales_folder]: ./src/scales/
 [exercise5_file]: ./examples/exercise5.rs
 [5_jazz_chords_url]: https://www.youtube.com/watch?v=WrLFCznbNMw
+[12_minor_scales_url]: https://www.damvibes.com/music-theory/minor-scales/
+[12_major_scales_url]: https://www.damvibes.com/music-theory/major-scales/
