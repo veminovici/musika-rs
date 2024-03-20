@@ -1,5 +1,6 @@
 # Simplee > Musika
 
+[![Crates.io][crates-badge]][crates-url]
 [![CI][ci-badge]][ci-url]
 ![GitHub top language][lang-badge]
 [![License:MIT][license-badge]][license-url]
@@ -99,6 +100,8 @@ cargo run --example exercise5
 ## About
 > Code designed and written on the beautiful island of [**Saaremaa**][estonia_url], Estonia.
 
+[crates-badge]: https://img.shields.io/crates/v/musika-rs.svg
+[crates-url]: https://crates.io/crates/musika-rs
 [ci-badge]: https://github.com/veminovici/musika-rs/actions/workflows/ci.yml/badge.svg?branch=main
 [ci-url]: https://github.com/veminovici/musika-rs/actions/workflows/ci.yml
 [lang-badge]: https://img.shields.io/github/languages/top/veminovici/musika-rs
