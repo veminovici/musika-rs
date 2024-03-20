@@ -20,6 +20,21 @@
 //! let chord = C.maj13();
 //! println!("Cmaj13: {chord:X}");
 //! ```
+//!
+//! # Example for scales
+//!
+//! ```
+//! use musika_rs::{
+//!     scales::{self},
+//!     C,
+//! };
+//!
+//! let scale = scales::major(C);
+//! println!("{scale:X}");
+//!
+//! let scale = scales::minor(C);
+//! println!("{scale:x}");
+//! ```
 
 mod bar;
 pub mod chords;

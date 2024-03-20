@@ -11,26 +11,34 @@
 A Rust crate for musical basic elements.
 
 ```rust
-use musika_rs::C;
+use musika_rs::{C, chords::{self}, scales::{self}};
 
 let chord = C.maj();
 println!("{chord:X}");
 
-let chord = C.maj7();
-println!("{chord:X}");
-
-let chord = C.min();
-println!("{chord:X}");
-
-let chord = C.dom7();
-println!("{chord:X}");
+let scale = scales::major(C);
+println!("{scale:X}");
 ```
 
-You can find more examples in the [examples][examples_folder] folder.
+You can find more examples in the [examples][examples_folder] folder. To run an example:
+
+```bsh
+cargo run --example find
+```
+
+### Sharps and Flats
+The crate allows you to print the notes either with sharps (#) or flats(b) by using X or x when fomating the chords or the scales:
+
+```
+let scale = minor(C);
+assert_eq!(format!("{scale:X}"), "C minor [C, D, D#, F, G, G#, A#, C]");
+assert_eq!(format!("{scale:x}"), "C minor [C, D, Eb, F, G, Ab, Bb, C]");
+```
+
 
 ## Chords
-The create allows you to build the following chords:
-- [major](major_chord_url)
+The crate allows you to build the following chords:
+- [major][major_chord_url]
 - [major7][major7_chord_url]
 - [minor][minor_chord_url]
 - [minor7][minor7_chord_url]
@@ -40,6 +48,21 @@ The create allows you to build the following chords:
 - [dominant7][dom7_chord_url]
 
 You can find all the chords in the [chords][chords_folder] folder.
+
+## Scales
+The crate allows you to build the following scales:
+- [major][scale_major_file]
+- [minor][scale_minor_file]
+
+```rust
+use musika_rs::scales::*;
+
+let scale = scales::major(C);
+assert_eq!(format!("{scale:X}"), "C major [C, D, E, F, G, A, B, C]");
+assert_eq!(format!("{scale:x}"), "C major [C, D, E, F, G, A, B, C]");
+```
+
+You can find all the scales in the [scales][scales_folder] folder.
 
 ## Piano Exercises
 You can find all piano exercises implemented in the exercises examples. You can see the practices by running:
@@ -55,10 +78,11 @@ cargo run --example exercise5
 - [Exercise 2][exercise2_file] | C - G | Am - F | C - G | F - Em - Dm - C |
 - [Exercise 3][exercise3_file] | Cx4 | Gx4 | Gx4 | Cx4 | Fx4 | Cx4 | Gx4 | Cx4 |
 - [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
-- [Exercise 4][exercise4_file] | C | F | Bdim | Em | Am | Dm | G | C |
+- [Exercise 5][exercise5_file] | Dm9 Dm9 | G13 G13 | Dm9 Dm9 | G13 G13 |
 
 ## Resources
 - [Piano Chords][piano_chords_url]
+- [5 Jazz Chords that Actually Sound Great][5_jazz_chords_url]
 
 ## About
 > Code designed and written on the beautiful island of [**Saaremaa**][estonia_url], Estonia.
@@ -89,3 +113,8 @@ cargo run --example exercise5
 [exercise3_file]: ./examples/exercise3.rs
 [exercise4_file]: ./examples/exercise4.rs
 [exercise5_file]: ./examples/exercise5.rs
+[scale_minor_file]: ./src/scales/minor.rs
+[scale_major_file]: ./src/scales/major.rs
+[scales_folder]: ./src/scales/
+[exercise5_file]: ./examples/exercise5.rs
+[5_jazz_chords_url]: https://www.youtube.com/watch?v=WrLFCznbNMw
