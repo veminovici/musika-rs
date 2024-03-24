@@ -3,7 +3,10 @@ use std::{
     ops::{Add, Sub},
 };
 
-use crate::chords::{self, Chords};
+use crate::{
+    chords::{self, Chords},
+    Interval, PERFECT_5TH,
+};
 
 use super::{Tone, OCTAVE};
 
@@ -45,6 +48,10 @@ impl Note {
         } else {
             octave + Self::TRANSLATE
         }
+    }
+
+    pub fn perfect_fifth(&self) -> Self {
+        self + PERFECT_5TH
     }
 
     //
@@ -297,6 +304,24 @@ impl Add<Tone> for Note {
     }
 }
 
+impl Add<Interval> for Note {
+    type Output = Self;
+
+    fn add(self, interval: Interval) -> Self::Output {
+        let note = self.0 + u8::from(interval) as i8;
+        note.into()
+    }
+}
+
+impl Add<Interval> for &Note {
+    type Output = Note;
+
+    fn add(self, interval: Interval) -> Self::Output {
+        let note = self.0 + u8::from(interval) as i8;
+        note.into()
+    }
+}
+
 impl Sub<Tone> for Note {
     type Output = Self;
 
@@ -497,6 +522,13 @@ mod tests {
     #[test]
     fn sub_note() {
         assert_eq!(C - B, SEMI_TONE);
+    }
+
+    #[test]
+    fn perfect_fifth() {
+        assert_eq!(D.perfect_fifth().base(), A.base());
+        assert_eq!(A.perfect_fifth().base(), E.base());
+        assert_eq!(E.perfect_fifth().base(), B.base());
     }
 }
 
